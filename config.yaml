@@ -4,23 +4,12 @@ server:
 cache_ttl_seconds: 300
 plugins_dir: ./plugins
 feeds:
-  martin-fowler-2:
-    url: http://martinfowler.com/bliki/bliki.atom
-    title_override: Martin Fowler
-    group: Tech
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  appleinsider-news:
-    url: http://www.appleinsider.com/appleinsider.rss
-    title_override: AppleInsider News
+  openmaterials:
+    url: http://openmaterials.org/feed/
+    title_override: openMaterials
     group: Diy
+    nop: true
+    nop_reason: Network error (error sending request for url (http://openmaterials.org/feed/))
     filters:
       include_keywords: []
       exclude_keywords: []
@@ -30,75 +19,12 @@ feeds:
       max_age_days: null
       max_items: null
       scripts: []
-  matterhackers-articles:
-    url: https://www.matterhackers.com/rss/articles
-    title_override: MatterHackers Articles
-    group: Diy
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  bbc-news:
-    url: https://feeds.bbci.co.uk/news/rss.xml
-    title_override: BBC News
-    group: Uncategorized
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  the-next-web:
-    url: http://feeds2.feedburner.com/thenextweb
-    title_override: The Next Web
-    group: Business
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  scripting-news:
-    url: http://scripting.com/rss.xml
-    title_override: Scripting News
-    group: Uncategorized
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  raspberry-pi-official-magazine:
-    url: https://hackspace.raspberrypi.org/feed
-    title_override: Raspberry Pi Official Magazine
-    group: Diy
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  simon-willison-s-weblog:
-    url: https://simonwillison.net/atom/everything/
-    title_override: Simon Willison's Weblog
+  pragmatic-engineer-gergely-orosz:
+    url: https://newsletter.pragmaticengineer.com/feed
+    title_override: Pragmatic Engineer (Gergely Orosz)
     group: Individual Engineers & Thought Leaders
+    nop: false
+    nop_reason: null
     filters:
       include_keywords: []
       exclude_keywords: []
@@ -108,10 +34,27 @@ feeds:
       max_age_days: null
       max_items: null
       scripts: []
-  hacker-news:
-    url: http://news.ycombinator.com/rss
+  tindie-product-feed:
+    url: https://tindie.com/feed/
+    title_override: Tindie product feed
+    group: Diy
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  hacker-news-2:
+    url: https://news.ycombinator.com/rss
     title_override: Hacker News
-    group: Business
+    group: Tech News & Media
+    nop: false
+    nop_reason: null
     filters:
       include_keywords: []
       exclude_keywords: []
@@ -121,10 +64,12 @@ feeds:
       max_age_days: null
       max_items: null
       scripts: []
-  google-developers-blog:
-    url: https://blog.google/technology/developers/rss/
-    title_override: Google Developers Blog
-    group: Engineering Blogs
+  netnewswire-blog:
+    url: https://netnewswire.blog/feed.json
+    title_override: NetNewsWire Blog
+    group: Uncategorized
+    nop: false
+    nop_reason: null
     filters:
       include_keywords: []
       exclude_keywords: []
@@ -134,49 +79,117 @@ feeds:
       max_age_days: null
       max_items: null
       scripts: []
-  ars-technica-all-content:
-    url: http://feeds.arstechnica.com/arstechnica/index/
-    title_override: Ars Technica - All content
-    group: Tech
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  blog-hackaday:
-    url: http://www.hackaday.com/rss.xml
-    title_override: Blog – Hackaday
-    group: Tech
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  google-cloud-blog:
-    url: https://cloud.google.com/blog/rss/
-    title_override: Google Cloud Blog
-    group: Engineering Blogs
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  ifoodreal-com:
-    url: http://ifoodreal.com/feed/
-    title_override: iFoodReal.com
+  lexi-s-clean-kitchen:
+    url: http://lexiscleankitchen.com/feed/
+    title_override: Lexi's Clean Kitchen
     group: Food
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  clean-cuisine:
+    url: http://cleancuisineandmore.com/feed/
+    title_override: clean cuisine
+    group: Food
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  benedict-evans:
+    url: https://www.ben-evans.com/benedictevans?format=rss
+    title_override: Benedict Evans
+    group: Individual Engineers & Thought Leaders
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  slashdot:
+    url: http://rss.slashdot.org/Slashdot/slashdot
+    title_override: Slashdot
+    group: Tech
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  engadget:
+    url: http://www.engadget.com/rss-full.xml
+    title_override: Engadget
+    group: Tech
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  www-theregister-com-articles:
+    url: http://www.theregister.co.uk/excerpts.rss
+    title_override: www.theregister.com - Articles
+    group: Tech
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  quantum:
+    url: https://quantum5.ca/feed.xml
+    title_override: Quantum
+    group: Tech
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  the-novice-chef:
+    url: http://feeds.feedblitz.com/thenovicechefblog2
+    title_override: The Novice Chef
+    group: Food
+    nop: true
+    nop_reason: HTTP 404 Not Found
     filters:
       include_keywords: []
       exclude_keywords: []
@@ -190,6 +203,8 @@ feeds:
     url: http://hbswk.hbs.edu/rss/rss.xml
     title_override: HBS Working Knowledge
     group: Business
+    nop: false
+    nop_reason: null
     filters:
       include_keywords: []
       exclude_keywords: []
@@ -199,23 +214,12 @@ feeds:
       max_age_days: null
       max_items: null
       scripts: []
-  make-diy-projects-and-ideas-for-makers:
-    url: http://blog.makezine.com/index.xml
-    title_override: 'Make: DIY Projects and Ideas for Makers'
-    group: Business
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  ai-the-verge:
-    url: https://www.theverge.com/rss/ai-artificial-intelligence/index.xml
-    title_override: AI | The Verge
+  slashgear-tech-cars-gaming-science-reviews:
+    url: http://www.slashgear.com/feed/
+    title_override: SlashGear - Tech, Cars, Gaming, Science, & Reviews
     group: Tech
+    nop: false
+    nop_reason: null
     filters:
       include_keywords: []
       exclude_keywords: []
@@ -225,179 +229,12 @@ feeds:
       max_age_days: null
       max_items: null
       scripts: []
-  ubergizmo:
-    url: http://www.ubergizmo.com/index.xml
-    title_override: Ubergizmo
-    group: Diy
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  ikea-hackers:
-    url: http://feeds.feedburner.com/Ikeahacker
-    title_override: IKEA Hackers
-    group: Diy
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  associated-press:
-    url: https://feedx.net/rss/ap.xml
-    title_override: Associated Press
-    group: Uncategorized
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  dan-luu:
-    url: https://danluu.com/atom.xml
-    title_override: Dan Luu
-    group: Individual Engineers & Thought Leaders
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  stratechery-by-ben-thompson-2:
-    url: https://stratechery.com/feed/
-    title_override: Stratechery by Ben Thompson
-    group: Individual Engineers & Thought Leaders
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  a-list-apart-the-full-feed:
-    url: http://www.alistapart.com/rss.xml
-    title_override: 'A List Apart: The Full Feed'
-    group: Design
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  design-milk:
-    url: http://feeds.feedburner.com/design-milk
-    title_override: Design Milk
-    group: Design
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  ai:
-    url: https://www.blog.google/technology/ai/rss/
-    title_override: AI
-    group: Tech
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  artificial-intelligence-ai-techcrunch:
-    url: https://techcrunch.com/tag/artificial-intelligence/feed/
-    title_override: Artificial Intelligence (AI) | TechCrunch
-    group: Tech
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  techmeme:
-    url: http://www.techmeme.com/index.xml
-    title_override: Techmeme
-    group: Tech
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  mit-sloan-management-review:
-    url: http://feeds.feedburner.com/mitsmr
-    title_override: MIT Sloan Management Review
-    group: Business
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  meta-engineering:
-    url: https://engineering.fb.com/feed/
-    title_override: Meta Engineering
+  shopify-engineering:
+    url: https://shopify.engineering/blog.feed
+    title_override: Shopify Engineering
     group: Engineering Blogs
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  clean-food-crush:
-    url: http://cleanfoodcrush.com/feed/
-    title_override: Clean Food Crush
-    group: Food
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  cnnmoney:
-    url: http://rss.cnn.com/rss/money_topstories.rss
-    title_override: CNNMoney
-    group: Finance
+    nop: true
+    nop_reason: HTTP 404 Not Found
     filters:
       include_keywords: []
       exclude_keywords: []
@@ -411,6 +248,8 @@ feeds:
     url: http://feeds.gawker.com/lifehacker/vip
     title_override: Lifehacker
     group: Tech
+    nop: true
+    nop_reason: HTTP 404 Not Found
     filters:
       include_keywords: []
       exclude_keywords: []
@@ -424,123 +263,8 @@ feeds:
     url: http://lasercutdesignlab.blogspot.com/feeds/posts/default
     title_override: Laser Cut Design Laboratory
     group: Diy
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  clean-delicious:
-    url: http://cleananddelicious.com/feed/
-    title_override: Clean & Delicious
-    group: Food
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  high-scalability:
-    url: http://feeds.feedburner.com/HighScalability
-    title_override: High Scalability
-    group: Individual Engineers & Thought Leaders
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  machine-intelligence-research-institute:
-    url: http://feeds.feedburner.com/miriblog
-    title_override: ' Machine Intelligence Research Institute '
-    group: Tech
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  inspired-taste-easy-recipes-for-home-cooks:
-    url: http://feeds.feedburner.com/Inspiredtaste
-    title_override: Inspired Taste – Easy Recipes for Home Cooks
-    group: Food
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  ness-labs:
-    url: https://nesslabs.com/feed
-    title_override: Ness Labs
-    group: Tech
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  the-verge-2:
-    url: https://www.theverge.com/rss/index.xml
-    title_override: The Verge
-    group: Tech News & Media
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  the-clean-eating-couple:
-    url: http://thecleaneatingcouple.com/feed/
-    title_override: The Clean Eating Couple
-    group: Food
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  nyt-business:
-    url: https://rss.nytimes.com/services/xml/rss/nyt/Business.xml
-    title_override: NYT > Business
-    group: Uncategorized
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  smitten-kitchen:
-    url: http://feeds.feedburner.com/smittenkitchen
-    title_override: smitten kitchen
-    group: Food
+    nop: false
+    nop_reason: null
     filters:
       include_keywords: []
       exclude_keywords: []
@@ -554,6 +278,8 @@ feeds:
     url: http://www.technologyreview.com/rss/rss.aspx
     title_override: MIT Technology Review
     group: Business
+    nop: true
+    nop_reason: HTTP 404 Not Found
     filters:
       include_keywords: []
       exclude_keywords: []
@@ -563,10 +289,42 @@ feeds:
       max_age_days: null
       max_items: null
       scripts: []
-  slashgear:
-    url: http://feeds.slashgear.com/slashgear
-    title_override: SlashGear
+  simon-willison-s-weblog:
+    url: https://simonwillison.net/atom/everything/
+    title_override: Simon Willison's Weblog
+    group: Individual Engineers & Thought Leaders
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  flowingdata:
+    url: http://feeds.feedburner.com/FlowingData
+    title_override: FlowingData
+    group: Science
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  irrational-exuberance:
+    url: http://lethain.com/feeds/all/
+    title_override: Irrational Exuberance
     group: Business
+    nop: false
+    nop_reason: null
     filters:
       include_keywords: []
       exclude_keywords: []
@@ -576,10 +334,12 @@ feeds:
       max_age_days: null
       max_items: null
       scripts: []
-  3d-printing-blog-i-materialise:
-    url: http://feeds.feedburner.com/imaterialise
-    title_override: 3D Printing Blog | i.materialise
-    group: Diy
+  r-generativeai:
+    url: https://api.reddit.com/subreddit/generativeAI
+    title_override: r/generativeAI
+    group: Tech
+    nop: true
+    nop_reason: HTTP 403 Forbidden
     filters:
       include_keywords: []
       exclude_keywords: []
@@ -589,36 +349,342 @@ feeds:
       max_age_days: null
       max_items: null
       scripts: []
-  the-official-google-blog:
-    url: http://googleblog.blogspot.com/atom.xml
-    title_override: The Official Google Blog
-    group: Business
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  a-beautiful-mess:
-    url: http://abeautifulmess.typepad.com/my_weblog/atom.xml
-    title_override: A Beautiful Mess
-    group: Diy
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  slack-engineering:
-    url: https://slack.engineering/feed
-    title_override: Slack Engineering
+  meta-engineering:
+    url: https://engineering.fb.com/feed/
+    title_override: Meta Engineering
     group: Engineering Blogs
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  ifoodreal-com:
+    url: http://ifoodreal.com/feed/
+    title_override: iFoodReal.com
+    group: Food
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  google-deepmind:
+    url: https://blog.google/technology/google-deepmind/rss/
+    title_override: Google DeepMind
+    group: Tech
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  aws-compute-blog:
+    url: https://aws.amazon.com/blogs/compute/feed/
+    title_override: AWS Compute Blog
+    group: Engineering Blogs
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  ars-technica-all-content:
+    url: http://feeds.arstechnica.com/arstechnica/index/
+    title_override: Ars Technica - All content
+    group: Tech
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  popular-science:
+    url: http://www.popsci.com/rss.xml
+    title_override: Popular Science
+    group: Science
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  wired-tech:
+    url: https://www.wired.com/feed/category/gear/latest/rss
+    title_override: Wired Tech
+    group: Tech News & Media
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  a-list-apart-the-full-feed:
+    url: http://www.alistapart.com/rss.xml
+    title_override: 'A List Apart: The Full Feed'
+    group: Design
+    nop: true
+    nop_reason: HTTP 404 Not Found
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  the-atlantic-business:
+    url: http://feeds.feedburner.com/AtlanticBusinessChannel
+    title_override: The Atlantic - Business
+    group: Business
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  google-developers:
+    url: http://code.google.com/feeds/updates.xml
+    title_override: 'Google Developers '
+    group: Tech
+    nop: true
+    nop_reason: HTTP 404 Not Found
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  ai:
+    url: https://www.blog.google/technology/ai/rss/
+    title_override: AI
+    group: Tech
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  the-verge-2:
+    url: https://www.theverge.com/rss/index.xml
+    title_override: The Verge
+    group: Tech News & Media
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  bluesky-status-incident-history:
+    url: https://status.bsky.app/history.rss
+    title_override: Bluesky Status - Incident history
+    group: Tech
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  react:
+    url: http://facebook.github.io/react/feed.xml
+    title_override: React
+    group: Tech
+    nop: true
+    nop_reason: HTTP 404 Not Found
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  fast-company:
+    url: http://feeds.feedburner.com/fastcompany/headlines
+    title_override: Fast Company
+    group: Business
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  the-verge:
+    url: http://www.theverge.com/rss/full.xml
+    title_override: The Verge
+    group: Diy
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  the-motley-fool:
+    url: http://www.fool.com/About/headlines/rss_headlines.asp
+    title_override: The Motley Fool
+    group: Finance
+    nop: true
+    nop_reason: 'Invalid feed XML (unable to parse feed: no root element)'
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  scientific-american-content:
+    url: http://www.sciam.com/xml/sciam.xml
+    title_override: Scientific American Content
+    group: Science
+    nop: true
+    nop_reason: HTTP 404 Not Found
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  the-clean-eating-couple:
+    url: http://thecleaneatingcouple.com/feed/
+    title_override: The Clean Eating Couple
+    group: Food
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  oh-happy-day:
+    url: http://ohhappyday.com/feed/
+    title_override: Oh Happy Day!
+    group: Diy
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  articles-on-smashing-magazine-for-web-designers-and-developers:
+    url: http://www.smashingmagazine.com/feed/
+    title_override: Articles on Smashing Magazine — For Web Designers And Developers
+    group: Design
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  mit-news-artificial-intelligence:
+    url: http://news.mit.edu/rss/topic/artificial-intelligence2
+    title_override: MIT News - Artificial intelligence
+    group: Tech
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  new-atlas-technology-innovation-outdoor-news:
+    url: http://gizmag.com/xml/
+    title_override: 'New Atlas: Technology-Innovation-Outdoor News'
+    group: Diy
+    nop: false
+    nop_reason: null
     filters:
       include_keywords: []
       exclude_keywords: []
@@ -633,1281 +699,7 @@ feeds:
     title_override: 'Papers with Code: Latest (unofficial)'
     group: Tech
     nop: true
-    nop_reason: 'HTTP 403 Forbidden (policy)'
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  this-week-in-rust:
-    url: http://this-week-in-rust.org/atom.xml
-    title_override: This Week in Rust
-    group: Tech
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  ars-technica:
-    url: https://feeds.arstechnica.com/arstechnica/index
-    title_override: Ars Technica
-    group: Tech News & Media
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  shopify-engineering:
-    url: https://shopify.engineering/blog.feed
-    title_override: Shopify Engineering
-    group: Engineering Blogs
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  jason-kottke:
-    url: https://feeds.kottke.org/main
-    title_override: Jason Kottke
-    group: Uncategorized
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  openai:
-    url: https://blog.openai.com/rss/
-    title_override: 'OpenAI '
-    group: Diy
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  dailyai:
-    url: https://dailyai.com/feed/
-    title_override: DailyAI
-    group: Tech
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  the-gadgeteer:
-    url: http://www.the-gadgeteer.com/feed
-    title_override: The Gadgeteer
-    group: Diy
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  calculated-risk:
-    url: http://www.calculatedriskblog.com/feeds/posts/default
-    title_override: Calculated Risk
-    group: Business
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  the-novice-chef:
-    url: http://feeds.feedblitz.com/thenovicechefblog2
-    title_override: The Novice Chef
-    group: Food
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  pragmatic-engineer-gergely-orosz:
-    url: https://newsletter.pragmaticengineer.com/feed
-    title_override: Pragmatic Engineer (Gergely Orosz)
-    group: Individual Engineers & Thought Leaders
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  popular-science:
-    url: http://www.popsci.com/rss.xml
-    title_override: Popular Science
-    group: Science
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  openmaterials:
-    url: http://openmaterials.org/feed/
-    title_override: openMaterials
-    group: Diy
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  daring-fireball:
-    url: https://daringfireball.net/feeds/json
-    title_override: Daring Fireball
-    group: Uncategorized
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  how-to-geek:
-    url: http://feeds.howtogeek.com/HowToGeek
-    title_override: How-To Geek
-    group: Diy
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  netflix-techblog:
-    url: https://netflixtechblog.com/feed
-    title_override: Netflix TechBlog
-    group: Engineering Blogs
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  futurity:
-    url: http://www.futurity.org/feed/
-    title_override: Futurity
-    group: Science
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  mashable:
-    url: http://feeds.mashable.com/Mashable
-    title_override: Mashable
-    group: Diy
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  joel-on-software:
-    url: https://www.joelonsoftware.com/feed/
-    title_override: Joel on Software
-    group: Individual Engineers & Thought Leaders
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  spotify-engineering:
-    url: https://engineering.atspotify.com/feed/
-    title_override: Spotify Engineering
-    group: Engineering Blogs
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  flowingdata:
-    url: http://feeds.feedburner.com/FlowingData
-    title_override: FlowingData
-    group: Science
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  io9:
-    url: http://feeds.gawker.com/io9/full
-    title_override: io9
-    group: Science
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  nyt-sam-sifton:
-    url: http://topics.nytimes.com/top/reference/timestopics/people/s/sam_sifton/?inline=nyt-per&rss=1
-    title_override: NYT > Sam Sifton
-    group: Food
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  wired:
-    url: http://feeds.wired.com/wired/index
-    title_override: Wired
-    group: Science
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  airbnb-engineering:
-    url: https://medium.com/feed/airbnb-engineering
-    title_override: Airbnb Engineering
-    group: Engineering Blogs
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  articles-on-smashing-magazine-for-web-designers-and-developers:
-    url: http://www.smashingmagazine.com/feed/
-    title_override: Articles on Smashing Magazine — For Web Designers And Developers
-    group: Design
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  slashdot:
-    url: http://rss.slashdot.org/Slashdot/slashdot
-    title_override: Slashdot
-    group: Tech
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  hacker-news-2:
-    url: https://news.ycombinator.com/rss
-    title_override: Hacker News
-    group: Tech News & Media
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  digital-trends:
-    url: http://www.digitaltrends.com/feed/?key=f00edf6a58d2a8740e624dda919cab37
-    title_override: Digital Trends
-    group: Tech
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  stratechery-by-ben-thompson:
-    url: http://stratechery.com/feed/
-    title_override: Stratechery by Ben Thompson
-    group: Diy
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  slashgear-tech-cars-gaming-science-reviews:
-    url: http://www.slashgear.com/feed/
-    title_override: SlashGear - Tech, Cars, Gaming, Science, & Reviews
-    group: Tech
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  krebs-on-security:
-    url: https://krebsonsecurity.com/feed/
-    title_override: Krebs on Security
-    group: Tech News & Media
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  harvard-business-review:
-    url: http://feeds.harvardbusiness.org/harvardbusiness/
-    title_override: 'Harvard Business Review '
-    group: Business
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  thingiverse-newest-things:
-    url: http://www.thingiverse.com/rss/newest
-    title_override: Thingiverse - Newest Things
-    group: Diy
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  linkedin-engineering:
-    url: https://engineering.linkedin.com/blog.rss
-    title_override: LinkedIn Engineering
-    group: Engineering Blogs
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  clean-cuisine:
-    url: http://cleancuisineandmore.com/feed/
-    title_override: clean cuisine
-    group: Food
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  the-motley-fool:
-    url: http://www.fool.com/About/headlines/rss_headlines.asp
-    title_override: The Motley Fool
-    group: Finance
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  ghacks:
-    url: http://www.ghacks.net/feed/
-    title_override: gHacks
-    group: Tech
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  google-deepmind:
-    url: https://blog.google/technology/google-deepmind/rss/
-    title_override: Google DeepMind
-    group: Tech
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  venturebeat:
-    url: http://venturebeat.com/feed/
-    title_override: VentureBeat
-    group: Tech
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  manton-reece:
-    url: https://www.manton.org/feed.json
-    title_override: Manton Reece
-    group: Uncategorized
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  irrational-exuberance:
-    url: http://lethain.com/feeds/all/
-    title_override: Irrational Exuberance
-    group: Business
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  michael-tsai:
-    url: https://mjtsai.com/blog/feed/
-    title_override: Michael Tsai
-    group: Uncategorized
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  bluesky-status-incident-history:
-    url: https://status.bsky.app/history.rss
-    title_override: Bluesky Status - Incident history
-    group: Tech
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  aws-architecture-blog:
-    url: https://aws.amazon.com/blogs/architecture/feed/
-    title_override: AWS Architecture Blog
-    group: Engineering Blogs
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  aws-compute-blog:
-    url: https://aws.amazon.com/blogs/compute/feed/
-    title_override: AWS Compute Blog
-    group: Engineering Blogs
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  uber-engineering:
-    url: https://eng.uber.com/feed/
-    title_override: Uber Engineering
-    group: Engineering Blogs
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  the-atlantic-business:
-    url: http://feeds.feedburner.com/AtlanticBusinessChannel
-    title_override: The Atlantic - Business
-    group: Business
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  cloudflare-blog:
-    url: https://blog.cloudflare.com/rss/
-    title_override: Cloudflare Blog
-    group: Engineering Blogs
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  craig-hockenberry:
-    url: https://furbo.org/feed/json
-    title_override: Craig Hockenberry
-    group: Uncategorized
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  overreacted-dan-abramov:
-    url: https://overreacted.io/rss.xml
-    title_override: Overreacted (Dan Abramov)
-    group: Individual Engineers & Thought Leaders
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  tindie-product-feed:
-    url: https://tindie.com/feed/
-    title_override: Tindie product feed
-    group: Diy
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  r-generativeai:
-    url: https://api.reddit.com/subreddit/generativeAI
-    title_override: r/generativeAI
-    group: Tech
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  us-news-the-guardian:
-    url: https://www.theguardian.com/us-news/rss
-    title_override: US news | The Guardian
-    group: Uncategorized
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  react:
-    url: http://facebook.github.io/react/feed.xml
-    title_override: React
-    group: Tech
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  martin-fowler:
-    url: https://martinfowler.com/feed.atom
-    title_override: Martin Fowler
-    group: Individual Engineers & Thought Leaders
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  fubiz:
-    url: http://www.fubiz.net/en/feed/
-    title_override: Fubiz
-    group: Design
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  mit-news-artificial-intelligence:
-    url: http://news.mit.edu/rss/topic/artificial-intelligence2
-    title_override: MIT News - Artificial intelligence
-    group: Tech
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  fast-company:
-    url: http://feeds.feedburner.com/fastcompany/headlines
-    title_override: Fast Company
-    group: Business
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  discord-engineering:
-    url: https://discord.com/blog/rss.xml
-    title_override: Discord Engineering
-    group: Engineering Blogs
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  netnewswire-blog:
-    url: https://netnewswire.blog/feed.json
-    title_override: NetNewsWire Blog
-    group: Uncategorized
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  canva-engineering:
-    url: https://canva.dev/blog/rss.xml
-    title_override: Canva Engineering
-    group: Engineering Blogs
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  freakonomics:
-    url: http://freakonomics.blogs.nytimes.com/feed/
-    title_override: Freakonomics
-    group: Finance
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  pololu-new-products:
-    url: http://www.pololu.com/rss/new_products
-    title_override: Pololu - New Products
-    group: Diy
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  new-atlas-technology-innovation-outdoor-news:
-    url: http://gizmag.com/xml/
-    title_override: 'New Atlas: Technology-Innovation-Outdoor News'
-    group: Diy
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  lexi-s-clean-kitchen:
-    url: http://lexiscleankitchen.com/feed/
-    title_override: Lexi's Clean Kitchen
-    group: Food
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  science-magazine:
-    url: http://www.sciencemag.org/rss/current.xml
-    title_override: Science Magazine
-    group: Science
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  wired-tech:
-    url: https://www.wired.com/feed/category/gear/latest/rss
-    title_override: Wired Tech
-    group: Tech News & Media
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  oh-happy-day:
-    url: http://ohhappyday.com/feed/
-    title_override: Oh Happy Day!
-    group: Diy
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  the-verge:
-    url: http://www.theverge.com/rss/full.xml
-    title_override: The Verge
-    group: Diy
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  gizmodo:
-    url: http://feeds.gawker.com/gizmodo/full
-    title_override: Gizmodo
-    group: Business
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  inessential:
-    url: https://inessential.com/feed.json
-    title_override: inessential
-    group: Uncategorized
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  the-register:
-    url: https://www.theregister.com/headlines.atom
-    title_override: The Register
-    group: Tech News & Media
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  benedict-evans:
-    url: https://www.ben-evans.com/benedictevans?format=rss
-    title_override: Benedict Evans
-    group: Individual Engineers & Thought Leaders
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  copyblogger:
-    url: http://feeds.copyblogger.com/Copyblogger
-    title_override: Copyblogger
-    group: Business
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  engadget:
-    url: http://www.engadget.com/rss-full.xml
-    title_override: Engadget
-    group: Tech
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  gemini:
-    url: https://blog.google/products/gemini/rss/
-    title_override: Gemini
-    group: Tech
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  recipe-girl:
-    url: http://www.recipegirl.com/feed/
-    title_override: Recipe Girl®
-    group: Food
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  quantum:
-    url: https://quantum5.ca/feed.xml
-    title_override: Quantum
-    group: Tech
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  the-go-blog:
-    url: http://blog.golang.org/feeds/posts/default
-    title_override: The Go Blog
-    group: Tech
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  github-engineering:
-    url: https://github.blog/engineering/feed/
-    title_override: GitHub Engineering
-    group: Engineering Blogs
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  boing-boing:
-    url: http://feeds.boingboing.net/boingboing/iBag
-    title_override: Boing Boing
-    group: Diy
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  dropbox-tech:
-    url: https://dropbox.tech/feed
-    title_override: Dropbox Tech
-    group: Engineering Blogs
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  google-developers:
-    url: http://code.google.com/feeds/updates.xml
-    title_override: 'Google Developers '
-    group: Tech
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  yelp-engineering:
-    url: https://engineeringblog.yelp.com/feed.xml
-    title_override: Yelp Engineering
-    group: Engineering Blogs
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  rust-blog:
-    url: http://blog.rust-lang.org/feed.xml
-    title_override: Rust Blog
-    group: Tech
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  make-diy-projects-and-ideas-for-makers-2:
-    url: http://blog.craftzine.com/index.xml
-    title_override: 'Make: DIY Projects and Ideas for Makers'
-    group: Diy
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  stripe-engineering:
-    url: https://stripe.com/blog/feed.rss
-    title_override: Stripe Engineering
-    group: Engineering Blogs
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  the-sunday-wisdom:
-    url: https://coffeeandjunk.substack.com/feed
-    title_override: The Sunday Wisdom
-    group: Tech
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  six-colors:
-    url: https://feedpress.me/sixcolors?type=xml
-    title_override: Six Colors
-    group: Uncategorized
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  get-rich-slowly:
-    url: http://www.getrichslowly.org/blog/feed/
-    title_override: Get Rich Slowly
-    group: Finance
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  makeuseof:
-    url: http://feeds.feedburner.com/Makeuseof
-    title_override: MakeUseOf
-    group: Diy
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  etsy-journal:
-    url: http://www.etsy.com/storque/feeds/latest/
-    title_override: Etsy Journal
-    group: Diy
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  clean-eating:
-    url: http://www.cleaneatingmag.com/feed/
-    title_override: Clean Eating
-    group: Food
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  techcrunch-2:
-    url: https://techcrunch.com/feed/
-    title_override: TechCrunch
-    group: Tech News & Media
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  sciencedaily:
-    url: http://www.sciencedaily.com/newsfeed.xml
-    title_override: 'ScienceDaily '
-    group: Science
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  etsy-code-as-craft:
-    url: https://codeascraft.com/feed/
-    title_override: Etsy Code as Craft
-    group: Engineering Blogs
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  scientific-american-content:
-    url: http://www.sciam.com/xml/sciam.xml
-    title_override: Scientific American Content
-    group: Science
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  explore-all-projects-page-1-hackster-io:
-    url: https://www.hackster.io/projects.rss?sort=recent
-    title_override: Explore all projects - Page 1 - Hackster.io
-    group: Diy
+    nop_reason: HTTP 404 Not Found
     filters:
       include_keywords: []
       exclude_keywords: []
@@ -1921,71 +713,8 @@ feeds:
     url: http://feeds.feedburner.com/Techcrunch
     title_override: TechCrunch
     group: Tech
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  phys-org:
-    url: http://www.physorg.com/rss-feed/
-    title_override: Phys.org
-    group: Science
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  what-if:
-    url: http://what-if.xkcd.com/feed.atom
-    title_override: what if?
-    group: Science
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  scientific-american:
-    url: http://rss.sciam.com/ScientificAmerican-Global
-    title_override: Scientific American
-    group: Science
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  design-sponge:
-    url: http://www.designsponge.com/feed/
-    title_override: Design*Sponge
-    group: Diy
-    filters:
-      include_keywords: []
-      exclude_keywords: []
-      include_regex: []
-      exclude_regex: []
-      clean_links: true
-      max_age_days: null
-      max_items: null
-      scripts: []
-  pinterest-engineering:
-    url: https://medium.com/feed/pinterest-engineering
-    title_override: Pinterest Engineering
-    group: Engineering Blogs
+    nop: false
+    nop_reason: null
     filters:
       include_keywords: []
       exclude_keywords: []
@@ -1999,6 +728,8 @@ feeds:
     url: https://jvns.ca/atom.xml
     title_override: Julia Evans
     group: Uncategorized
+    nop: false
+    nop_reason: null
     filters:
       include_keywords: []
       exclude_keywords: []
@@ -2008,10 +739,12 @@ feeds:
       max_age_days: null
       max_items: null
       scripts: []
-  www-theregister-com-articles:
-    url: http://www.theregister.co.uk/excerpts.rss
-    title_override: www.theregister.com - Articles
-    group: Tech
+  bbc-news:
+    url: https://feeds.bbci.co.uk/news/rss.xml
+    title_override: BBC News
+    group: Uncategorized
+    nop: false
+    nop_reason: null
     filters:
       include_keywords: []
       exclude_keywords: []
@@ -2021,10 +754,912 @@ feeds:
       max_age_days: null
       max_items: null
       scripts: []
-  gigaom:
-    url: http://gigaom.com/feed/
-    title_override: Gigaom
+  the-next-web:
+    url: http://feeds2.feedburner.com/thenextweb
+    title_override: The Next Web
     group: Business
+    nop: true
+    nop_reason: HTTP 404 Not Found
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  martin-fowler-2:
+    url: http://martinfowler.com/bliki/bliki.atom
+    title_override: Martin Fowler
+    group: Tech
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  blog-hackaday:
+    url: http://www.hackaday.com/rss.xml
+    title_override: Blog – Hackaday
+    group: Tech
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  ikea-hackers:
+    url: http://feeds.feedburner.com/Ikeahacker
+    title_override: IKEA Hackers
+    group: Diy
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  high-scalability:
+    url: http://feeds.feedburner.com/HighScalability
+    title_override: High Scalability
+    group: Individual Engineers & Thought Leaders
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  github-engineering:
+    url: https://github.blog/engineering/feed/
+    title_override: GitHub Engineering
+    group: Engineering Blogs
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  recipe-girl:
+    url: http://www.recipegirl.com/feed/
+    title_override: Recipe Girl®
+    group: Food
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  what-if:
+    url: http://what-if.xkcd.com/feed.atom
+    title_override: what if?
+    group: Science
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  scientific-american:
+    url: http://rss.sciam.com/ScientificAmerican-Global
+    title_override: Scientific American
+    group: Science
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  openai:
+    url: https://blog.openai.com/rss/
+    title_override: 'OpenAI '
+    group: Diy
+    nop: true
+    nop_reason: 'Invalid feed XML (unable to parse feed: no root element)'
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  raspberry-pi-official-magazine:
+    url: https://hackspace.raspberrypi.org/feed
+    title_override: Raspberry Pi Official Magazine
+    group: Diy
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  slashgear:
+    url: http://feeds.slashgear.com/slashgear
+    title_override: SlashGear
+    group: Business
+    nop: true
+    nop_reason: Network error (error sending request for url (http://feeds.slashgear.com/slashgear))
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  calculated-risk:
+    url: http://www.calculatedriskblog.com/feeds/posts/default
+    title_override: Calculated Risk
+    group: Business
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  freakonomics:
+    url: http://freakonomics.blogs.nytimes.com/feed/
+    title_override: Freakonomics
+    group: Finance
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  clean-delicious:
+    url: http://cleananddelicious.com/feed/
+    title_override: Clean & Delicious
+    group: Food
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  nyt-sam-sifton:
+    url: http://topics.nytimes.com/top/reference/timestopics/people/s/sam_sifton/?inline=nyt-per&rss=1
+    title_override: NYT > Sam Sifton
+    group: Food
+    nop: true
+    nop_reason: 'Invalid feed XML (unable to parse feed: no root element)'
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  make-diy-projects-and-ideas-for-makers-2:
+    url: http://blog.craftzine.com/index.xml
+    title_override: 'Make: DIY Projects and Ideas for Makers'
+    group: Diy
+    nop: true
+    nop_reason: HTTP 404 Not Found
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  fubiz:
+    url: http://www.fubiz.net/en/feed/
+    title_override: Fubiz
+    group: Design
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  make-diy-projects-and-ideas-for-makers:
+    url: http://blog.makezine.com/index.xml
+    title_override: 'Make: DIY Projects and Ideas for Makers'
+    group: Business
+    nop: true
+    nop_reason: 'Invalid feed XML (unable to parse feed: no root element)'
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  explore-all-projects-page-1-hackster-io:
+    url: https://www.hackster.io/projects.rss?sort=recent
+    title_override: Explore all projects - Page 1 - Hackster.io
+    group: Diy
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  craig-hockenberry:
+    url: https://furbo.org/feed/json
+    title_override: Craig Hockenberry
+    group: Uncategorized
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  uber-engineering:
+    url: https://eng.uber.com/feed/
+    title_override: Uber Engineering
+    group: Engineering Blogs
+    nop: true
+    nop_reason: HTTP 404 Not Found
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  matterhackers-articles:
+    url: https://www.matterhackers.com/rss/articles
+    title_override: MatterHackers Articles
+    group: Diy
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  linkedin-engineering:
+    url: https://engineering.linkedin.com/blog.rss
+    title_override: LinkedIn Engineering
+    group: Engineering Blogs
+    nop: true
+    nop_reason: HTTP 404 Not Found
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  digital-trends:
+    url: http://www.digitaltrends.com/feed/?key=f00edf6a58d2a8740e624dda919cab37
+    title_override: Digital Trends
+    group: Tech
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  krebs-on-security:
+    url: https://krebsonsecurity.com/feed/
+    title_override: Krebs on Security
+    group: Tech News & Media
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  overreacted-dan-abramov:
+    url: https://overreacted.io/rss.xml
+    title_override: Overreacted (Dan Abramov)
+    group: Individual Engineers & Thought Leaders
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  the-gadgeteer:
+    url: http://www.the-gadgeteer.com/feed
+    title_override: The Gadgeteer
+    group: Diy
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  inspired-taste-easy-recipes-for-home-cooks:
+    url: http://feeds.feedburner.com/Inspiredtaste
+    title_override: Inspired Taste – Easy Recipes for Home Cooks
+    group: Food
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  ars-technica:
+    url: https://feeds.arstechnica.com/arstechnica/index
+    title_override: Ars Technica
+    group: Tech News & Media
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  harvard-business-review:
+    url: http://feeds.harvardbusiness.org/harvardbusiness/
+    title_override: 'Harvard Business Review '
+    group: Business
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  mashable:
+    url: http://feeds.mashable.com/Mashable
+    title_override: Mashable
+    group: Diy
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  pinterest-engineering:
+    url: https://medium.com/feed/pinterest-engineering
+    title_override: Pinterest Engineering
+    group: Engineering Blogs
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  the-official-google-blog:
+    url: http://googleblog.blogspot.com/atom.xml
+    title_override: The Official Google Blog
+    group: Business
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  manton-reece:
+    url: https://www.manton.org/feed.json
+    title_override: Manton Reece
+    group: Uncategorized
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  rust-blog:
+    url: http://blog.rust-lang.org/feed.xml
+    title_override: Rust Blog
+    group: Tech
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  michael-tsai:
+    url: https://mjtsai.com/blog/feed/
+    title_override: Michael Tsai
+    group: Uncategorized
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  cloudflare-blog:
+    url: https://blog.cloudflare.com/rss/
+    title_override: Cloudflare Blog
+    group: Engineering Blogs
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  ubergizmo:
+    url: http://www.ubergizmo.com/index.xml
+    title_override: Ubergizmo
+    group: Diy
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  io9:
+    url: http://feeds.gawker.com/io9/full
+    title_override: io9
+    group: Science
+    nop: true
+    nop_reason: HTTP 404 Not Found
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  a-beautiful-mess:
+    url: http://abeautifulmess.typepad.com/my_weblog/atom.xml
+    title_override: A Beautiful Mess
+    group: Diy
+    nop: true
+    nop_reason: HTTP 403 Forbidden
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  gemini:
+    url: https://blog.google/products/gemini/rss/
+    title_override: Gemini
+    group: Tech
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  how-to-geek:
+    url: http://feeds.howtogeek.com/HowToGeek
+    title_override: How-To Geek
+    group: Diy
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  dan-luu:
+    url: https://danluu.com/atom.xml
+    title_override: Dan Luu
+    group: Individual Engineers & Thought Leaders
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  clean-food-crush:
+    url: http://cleanfoodcrush.com/feed/
+    title_override: Clean Food Crush
+    group: Food
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  netflix-techblog:
+    url: https://netflixtechblog.com/feed
+    title_override: Netflix TechBlog
+    group: Engineering Blogs
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  thingiverse-newest-things:
+    url: http://www.thingiverse.com/rss/newest
+    title_override: Thingiverse - Newest Things
+    group: Diy
+    nop: true
+    nop_reason: HTTP 404 Not Found
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  futurity:
+    url: http://www.futurity.org/feed/
+    title_override: Futurity
+    group: Science
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  spotify-engineering:
+    url: https://engineering.atspotify.com/feed/
+    title_override: Spotify Engineering
+    group: Engineering Blogs
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  makeuseof:
+    url: http://feeds.feedburner.com/Makeuseof
+    title_override: MakeUseOf
+    group: Diy
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  boing-boing:
+    url: http://feeds.boingboing.net/boingboing/iBag
+    title_override: Boing Boing
+    group: Diy
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  this-week-in-rust:
+    url: http://this-week-in-rust.org/atom.xml
+    title_override: This Week in Rust
+    group: Tech
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  etsy-journal:
+    url: http://www.etsy.com/storque/feeds/latest/
+    title_override: Etsy Journal
+    group: Diy
+    nop: true
+    nop_reason: HTTP 404 Not Found
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  google-cloud-blog:
+    url: https://cloud.google.com/blog/rss/
+    title_override: Google Cloud Blog
+    group: Engineering Blogs
+    nop: true
+    nop_reason: 'Invalid feed XML (unable to parse feed: no root element)'
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  machine-intelligence-research-institute:
+    url: http://feeds.feedburner.com/miriblog
+    title_override: ' Machine Intelligence Research Institute '
+    group: Tech
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  mit-sloan-management-review:
+    url: http://feeds.feedburner.com/mitsmr
+    title_override: MIT Sloan Management Review
+    group: Business
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  ness-labs:
+    url: https://nesslabs.com/feed
+    title_override: Ness Labs
+    group: Tech
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  jason-kottke:
+    url: https://feeds.kottke.org/main
+    title_override: Jason Kottke
+    group: Uncategorized
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  copyblogger:
+    url: http://feeds.copyblogger.com/Copyblogger
+    title_override: Copyblogger
+    group: Business
+    nop: true
+    nop_reason: Network error (error sending request for url (http://feeds.copyblogger.com/Copyblogger))
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  joel-on-software:
+    url: https://www.joelonsoftware.com/feed/
+    title_override: Joel on Software
+    group: Individual Engineers & Thought Leaders
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  discord-engineering:
+    url: https://discord.com/blog/rss.xml
+    title_override: Discord Engineering
+    group: Engineering Blogs
+    nop: false
+    nop_reason: null
     filters:
       include_keywords: []
       exclude_keywords: []
@@ -2038,6 +1673,683 @@ feeds:
     url: http://www.techdirt.com/techdirt_rss.xml
     title_override: Techdirt
     group: Diy
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  dropbox-tech:
+    url: https://dropbox.tech/feed
+    title_override: Dropbox Tech
+    group: Engineering Blogs
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  sciencedaily:
+    url: http://www.sciencedaily.com/newsfeed.xml
+    title_override: 'ScienceDaily '
+    group: Science
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  stratechery-by-ben-thompson-2:
+    url: https://stratechery.com/feed/
+    title_override: Stratechery by Ben Thompson
+    group: Individual Engineers & Thought Leaders
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  the-register:
+    url: https://www.theregister.com/headlines.atom
+    title_override: The Register
+    group: Tech News & Media
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  stratechery-by-ben-thompson:
+    url: http://stratechery.com/feed/
+    title_override: Stratechery by Ben Thompson
+    group: Diy
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  artificial-intelligence-ai-techcrunch:
+    url: https://techcrunch.com/tag/artificial-intelligence/feed/
+    title_override: Artificial Intelligence (AI) | TechCrunch
+    group: Tech
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  gizmodo:
+    url: http://feeds.gawker.com/gizmodo/full
+    title_override: Gizmodo
+    group: Business
+    nop: true
+    nop_reason: HTTP 404 Not Found
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  yelp-engineering:
+    url: https://engineeringblog.yelp.com/feed.xml
+    title_override: Yelp Engineering
+    group: Engineering Blogs
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  3d-printing-blog-i-materialise:
+    url: http://feeds.feedburner.com/imaterialise
+    title_override: 3D Printing Blog | i.materialise
+    group: Diy
+    nop: true
+    nop_reason: 'Invalid feed XML (unable to parse feed: no root element)'
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  hacker-news:
+    url: http://news.ycombinator.com/rss
+    title_override: Hacker News
+    group: Business
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  inessential:
+    url: https://inessential.com/feed.json
+    title_override: inessential
+    group: Uncategorized
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  us-news-the-guardian:
+    url: https://www.theguardian.com/us-news/rss
+    title_override: US news | The Guardian
+    group: Uncategorized
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  pololu-new-products:
+    url: http://www.pololu.com/rss/new_products
+    title_override: Pololu - New Products
+    group: Diy
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  the-go-blog:
+    url: http://blog.golang.org/feeds/posts/default
+    title_override: The Go Blog
+    group: Tech
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  get-rich-slowly:
+    url: http://www.getrichslowly.org/blog/feed/
+    title_override: Get Rich Slowly
+    group: Finance
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  etsy-code-as-craft:
+    url: https://codeascraft.com/feed/
+    title_override: Etsy Code as Craft
+    group: Engineering Blogs
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  techcrunch-2:
+    url: https://techcrunch.com/feed/
+    title_override: TechCrunch
+    group: Tech News & Media
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  design-milk:
+    url: http://feeds.feedburner.com/design-milk
+    title_override: Design Milk
+    group: Design
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  nyt-business:
+    url: https://rss.nytimes.com/services/xml/rss/nyt/Business.xml
+    title_override: NYT > Business
+    group: Uncategorized
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  cnnmoney:
+    url: http://rss.cnn.com/rss/money_topstories.rss
+    title_override: CNNMoney
+    group: Finance
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  ai-the-verge:
+    url: https://www.theverge.com/rss/ai-artificial-intelligence/index.xml
+    title_override: AI | The Verge
+    group: Tech
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  daring-fireball:
+    url: https://daringfireball.net/feeds/json
+    title_override: Daring Fireball
+    group: Uncategorized
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  gigaom:
+    url: http://gigaom.com/feed/
+    title_override: Gigaom
+    group: Business
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  ghacks:
+    url: http://www.ghacks.net/feed/
+    title_override: gHacks
+    group: Tech
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  techmeme:
+    url: http://www.techmeme.com/index.xml
+    title_override: Techmeme
+    group: Tech
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  clean-eating:
+    url: http://www.cleaneatingmag.com/feed/
+    title_override: Clean Eating
+    group: Food
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  smitten-kitchen:
+    url: http://feeds.feedburner.com/smittenkitchen
+    title_override: smitten kitchen
+    group: Food
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  the-sunday-wisdom:
+    url: https://coffeeandjunk.substack.com/feed
+    title_override: The Sunday Wisdom
+    group: Tech
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  canva-engineering:
+    url: https://canva.dev/blog/rss.xml
+    title_override: Canva Engineering
+    group: Engineering Blogs
+    nop: true
+    nop_reason: HTTP 404 Not Found
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  six-colors:
+    url: https://feedpress.me/sixcolors?type=xml
+    title_override: Six Colors
+    group: Uncategorized
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  stripe-engineering:
+    url: https://stripe.com/blog/feed.rss
+    title_override: Stripe Engineering
+    group: Engineering Blogs
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  appleinsider-news:
+    url: http://www.appleinsider.com/appleinsider.rss
+    title_override: AppleInsider News
+    group: Diy
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  dailyai:
+    url: https://dailyai.com/feed/
+    title_override: DailyAI
+    group: Tech
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  science-magazine:
+    url: http://www.sciencemag.org/rss/current.xml
+    title_override: Science Magazine
+    group: Science
+    nop: true
+    nop_reason: HTTP 403 Forbidden
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  phys-org:
+    url: http://www.physorg.com/rss-feed/
+    title_override: Phys.org
+    group: Science
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  slack-engineering:
+    url: https://slack.engineering/feed
+    title_override: Slack Engineering
+    group: Engineering Blogs
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  design-sponge:
+    url: http://www.designsponge.com/feed/
+    title_override: Design*Sponge
+    group: Diy
+    nop: true
+    nop_reason: HTTP 404 Not Found
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  google-developers-blog:
+    url: https://blog.google/technology/developers/rss/
+    title_override: Google Developers Blog
+    group: Engineering Blogs
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  aws-architecture-blog:
+    url: https://aws.amazon.com/blogs/architecture/feed/
+    title_override: AWS Architecture Blog
+    group: Engineering Blogs
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  wired:
+    url: http://feeds.wired.com/wired/index
+    title_override: Wired
+    group: Science
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  martin-fowler:
+    url: https://martinfowler.com/feed.atom
+    title_override: Martin Fowler
+    group: Individual Engineers & Thought Leaders
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  venturebeat:
+    url: http://venturebeat.com/feed/
+    title_override: VentureBeat
+    group: Tech
+    nop: true
+    nop_reason: HTTP 429 Too Many Requests
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  airbnb-engineering:
+    url: https://medium.com/feed/airbnb-engineering
+    title_override: Airbnb Engineering
+    group: Engineering Blogs
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  scripting-news:
+    url: http://scripting.com/rss.xml
+    title_override: Scripting News
+    group: Uncategorized
+    nop: false
+    nop_reason: null
+    filters:
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
+      clean_links: true
+      max_age_days: null
+      max_items: null
+      scripts: []
+  associated-press:
+    url: https://feedx.net/rss/ap.xml
+    title_override: Associated Press
+    group: Uncategorized
+    nop: false
+    nop_reason: null
     filters:
       include_keywords: []
       exclude_keywords: []

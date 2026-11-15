@@ -239,7 +239,8 @@ async fn run_server(
 
     let fetcher = fetcher::FeedFetcher::new(config.cache_ttl_seconds);
     let state = Arc::new(server::AppState {
-        config: config.clone(),
+        config: Arc::new(tokio::sync::RwLock::new(config.clone())),
+        config_path: config_path.clone(),
         fetcher,
     });
     let app = server::create_router(state);

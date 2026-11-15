@@ -1,4 +1,4 @@
-use crate::config::{AppConfig, FeedConfig};
+use crate::config::{AppConfig, FeedConfig, FeedFilterConfig};
 use crate::fetcher::FeedFetcher;
 use crate::opml::{generate_grouped_opml, ExportableFeed};
 use crate::plugin::builtin::{
@@ -9,7 +9,7 @@ use crate::plugin::rhai_plugin::RhaiPlugin;
 use crate::plugin::{Plugin, PluginPipeline};
 use axum::{
     extract::{Path, Query, State},
-    http::{header, StatusCode},
+    http::{header, HeaderValue, StatusCode},
     response::{IntoResponse, Response},
     routing::get,
     Json, Router,
@@ -18,16 +18,19 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::path::PathBuf;
 use std::sync::Arc;
-use tracing::error;
+use tokio::sync::RwLock;
+use tracing::{error, info};
 
 pub struct AppState {
-    pub config: AppConfig,
+    pub config: Arc<RwLock<AppConfig>>,
+    pub config_path: PathBuf,
     pub fetcher: FeedFetcher,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct ProxyQuery {
     pub url: String,
+    pub group: Option<String>,
     pub include: Option<String>,
     pub exclude: Option<String>,
     pub include_regex: Option<String>,
@@ -63,20 +66,25 @@ struct StatusResponse {
     configured_feeds: Vec<String>,
     groups: Vec<String>,
     available_plugins: Vec<String>,
+    auto_register_proxy_feeds: bool,
 }
 
 async fn handle_root(State(state): State<Arc<AppState>>) -> Json<StatusResponse> {
-    let configured_feeds = state.config.feeds.keys().cloned().collect();
-    let mut groups_set = HashSet::new();
-    for f in state.config.feeds.values() {
-        if let Some(ref g) = f.group {
-            groups_set.insert(g.clone());
+    let (configured_feeds, groups, plugins_dir, auto_register) = {
+        let cfg = state.config.read().await;
+        let feeds = cfg.feeds.keys().cloned().collect();
+        let mut groups_set = HashSet::new();
+        for f in cfg.feeds.values() {
+            if let Some(ref g) = f.group {
+                groups_set.insert(g.clone());
+            }
         }
-    }
-    let mut groups: Vec<String> = groups_set.into_iter().collect();
-    groups.sort();
+        let mut groups: Vec<String> = groups_set.into_iter().collect();
+        groups.sort();
+        (feeds, groups, cfg.plugins_dir.clone(), cfg.auto_register_proxy_feeds)
+    };
 
-    let plugins = RhaiPlugin::load_directory(&state.config.plugins_dir);
+    let plugins = RhaiPlugin::load_directory(&plugins_dir);
     let available_plugins = plugins.iter().map(|p| p.name().to_string()).collect();
 
     Json(StatusResponse {
@@ -85,6 +93,7 @@ async fn handle_root(State(state): State<Arc<AppState>>) -> Json<StatusResponse>
         configured_feeds,
         groups,
         available_plugins,
+        auto_register_proxy_feeds: auto_register,
     })
 }
 
@@ -93,34 +102,37 @@ async fn handle_health() -> &'static str {
 }
 
 async fn handle_list_plugins(State(state): State<Arc<AppState>>) -> Json<Vec<String>> {
-    let plugins = RhaiPlugin::load_directory(&state.config.plugins_dir);
+    let plugins_dir = {
+        let cfg = state.config.read().await;
+        cfg.plugins_dir.clone()
+    };
+    let plugins = RhaiPlugin::load_directory(&plugins_dir);
     Json(plugins.into_iter().map(|p| p.name().to_string()).collect())
 }
 
 async fn handle_export_opml(State(state): State<Arc<AppState>>) -> Response {
-    let base_url = format!(
-        "http://{}:{}",
-        state.config.server.host, state.config.server.port
-    );
-
-    let feeds: Vec<ExportableFeed> = state
-        .config
-        .feeds
-        .iter()
-        .map(|(slug, cfg)| {
-            let title = cfg
-                .title_override
-                .clone()
-                .unwrap_or_else(|| slug.clone());
-            let proxy_url = format!("{}/feeds/{}", base_url, slug);
-            ExportableFeed {
-                title,
-                xml_url: proxy_url,
-                html_url: None,
-                group: cfg.group.clone(),
-            }
-        })
-        .collect();
+    let feeds = {
+        let cfg = state.config.read().await;
+        let base = format!("http://{}:{}", cfg.server.host, cfg.server.port);
+        let list: Vec<ExportableFeed> = cfg
+            .feeds
+            .iter()
+            .map(|(slug, f)| {
+                let title = f
+                    .title_override
+                    .clone()
+                    .unwrap_or_else(|| slug.clone());
+                let proxy_url = format!("{}/feeds/{}", base, slug);
+                ExportableFeed {
+                    title,
+                    xml_url: proxy_url,
+                    html_url: None,
+                    group: f.group.clone(),
+                }
+            })
+            .collect();
+        list
+    };
 
     let opml_xml = generate_grouped_opml("RSS Proxy Filtered Subscriptions", &feeds);
 
@@ -202,10 +214,19 @@ fn build_pipeline_for_feed(feed_cfg: &FeedConfig, plugins_dir: &str) -> Result<P
 
 /// Serves an aggregated RSS feed containing posts from ALL configured feeds
 async fn handle_all_feeds(State(state): State<Arc<AppState>>) -> Response {
+    let (feeds_list, host, port, plugins_dir) = {
+        let cfg = state.config.read().await;
+        let list: Vec<(String, FeedConfig)> = cfg.feeds.iter().map(|(k, v)| (k.clone(), v.clone())).collect();
+        (list, cfg.server.host.clone(), cfg.server.port, cfg.plugins_dir.clone())
+    };
+
     render_aggregated_feed(
         &state,
         "RSS Proxy - All Feeds",
-        &state.config.feeds.iter().collect::<Vec<_>>(),
+        &feeds_list,
+        &host,
+        port,
+        &plugins_dir,
     )
     .await
 }
@@ -216,17 +237,21 @@ async fn handle_group_feed(
     State(state): State<Arc<AppState>>,
 ) -> Response {
     let clean_group = group_param.trim_end_matches('/').to_lowercase();
-    let matching_feeds: Vec<(&String, &FeedConfig)> = state
-        .config
-        .feeds
-        .iter()
-        .filter(|(_, cfg)| {
-            cfg.group
-                .as_ref()
-                .map(|g| g.to_lowercase() == clean_group)
-                .unwrap_or(false)
-        })
-        .collect();
+    let (matching_feeds, host, port, plugins_dir) = {
+        let cfg = state.config.read().await;
+        let list: Vec<(String, FeedConfig)> = cfg
+            .feeds
+            .iter()
+            .filter(|(_, f)| {
+                f.group
+                    .as_ref()
+                    .map(|g| g.to_lowercase() == clean_group)
+                    .unwrap_or(false)
+            })
+            .map(|(k, v)| (k.clone(), v.clone()))
+            .collect();
+        (list, cfg.server.host.clone(), cfg.server.port, cfg.plugins_dir.clone())
+    };
 
     if matching_feeds.is_empty() {
         return (
@@ -245,6 +270,9 @@ async fn handle_group_feed(
         &state,
         &format!("RSS Proxy - {}", group_title),
         &matching_feeds,
+        &host,
+        port,
+        &plugins_dir,
     )
     .await
 }
@@ -252,12 +280,15 @@ async fn handle_group_feed(
 async fn render_aggregated_feed(
     state: &Arc<AppState>,
     feed_title: &str,
-    feeds_to_include: &[(&String, &FeedConfig)],
+    feeds_to_include: &[(String, FeedConfig)],
+    host: &str,
+    port: u16,
+    plugins_dir: &str,
 ) -> Response {
     if feeds_to_include.is_empty() {
         let empty_feed = crate::model::Feed {
             title: feed_title.to_string(),
-            link: format!("http://{}:{}/feeds", state.config.server.host, state.config.server.port),
+            link: format!("http://{}:{}/feeds", host, port),
             description: "No feeds in this view".to_string(),
             language: Some("en".to_string()),
             items: Vec::new(),
@@ -294,7 +325,7 @@ async fn render_aggregated_feed(
             feed.title = override_title.clone();
         }
 
-        let pipeline = match build_pipeline_for_feed(feed_cfg, &state.config.plugins_dir) {
+        let pipeline = match build_pipeline_for_feed(feed_cfg, plugins_dir) {
             Ok(p) => p,
             Err(e) => {
                 error!("Error building pipeline for {}: {}", slug, e);
@@ -334,7 +365,7 @@ async fn render_aggregated_feed(
 
     let aggregate_feed = crate::model::Feed {
         title: feed_title.to_string(),
-        link: format!("http://{}:{}/feeds", state.config.server.host, state.config.server.port),
+        link: format!("http://{}:{}/feeds", host, port),
         description: format!("Aggregated and filtered feeds for {}", feed_title),
         language: Some("en".to_string()),
         items: all_items,
@@ -360,14 +391,18 @@ async fn handle_configured_feed(
     State(state): State<Arc<AppState>>,
 ) -> Response {
     let clean_slug = slug.trim_end_matches('/');
-    let feed_cfg = match state.config.feeds.get(clean_slug) {
-        Some(cfg) => cfg,
-        None => {
-            return (
-                StatusCode::NOT_FOUND,
-                format!("Feed with slug '{}' not found in config", clean_slug),
-            )
-                .into_response();
+
+    let (feed_cfg, plugins_dir) = {
+        let cfg = state.config.read().await;
+        match cfg.feeds.get(clean_slug) {
+            Some(c) => (c.clone(), cfg.plugins_dir.clone()),
+            None => {
+                return (
+                    StatusCode::NOT_FOUND,
+                    format!("Feed with slug '{}' not found in config", clean_slug),
+                )
+                    .into_response();
+            }
         }
     };
 
@@ -395,7 +430,7 @@ async fn handle_configured_feed(
     }
 
     // 1. Build pipeline
-    let pipeline = match build_pipeline_for_feed(feed_cfg, &state.config.plugins_dir) {
+    let pipeline = match build_pipeline_for_feed(&feed_cfg, &plugins_dir) {
         Ok(p) => p,
         Err(e) => {
             error!("Invalid config for feed {}: {}", clean_slug, e);
@@ -483,7 +518,7 @@ async fn handle_proxy_feed(
         .unwrap_or_default();
 
     if !include_kws.is_empty() || !exclude_kws.is_empty() {
-        pipeline.add_plugin(Box::new(KeywordFilterPlugin::new(include_kws, exclude_kws)));
+        pipeline.add_plugin(Box::new(KeywordFilterPlugin::new(include_kws.clone(), exclude_kws.clone())));
     }
 
     // Regex
@@ -520,13 +555,18 @@ async fn handle_proxy_feed(
     }
 
     // Custom Rhai script
-    if let Some(script_name) = params.script {
+    let plugins_dir = {
+        let cfg = state.config.read().await;
+        cfg.plugins_dir.clone()
+    };
+
+    if let Some(ref script_name) = params.script {
         let script_file = if script_name.ends_with(".rhai") {
-            script_name
+            script_name.clone()
         } else {
             format!("{}.rhai", script_name)
         };
-        let path = PathBuf::from(&state.config.plugins_dir).join(&script_file);
+        let path = PathBuf::from(&plugins_dir).join(&script_file);
         match RhaiPlugin::from_file(&path) {
             Ok(p) => pipeline.add_plugin(Box::new(p)),
             Err(e) => {
@@ -544,29 +584,74 @@ async fn handle_proxy_feed(
         pipeline.add_plugin(Box::new(LimitPlugin::new(limit)));
     }
 
-    // Fetch feed
+    // Fetch feed (with automatic fallback to NOP feed on error)
     let mut feed = match state.fetcher.fetch(&params.url).await {
         Ok(f) => f,
-        Err(e) => {
-            if let Some(nop_feed) = pipeline.handle_fetch_error(&params.url, &params.url, &e).await {
-                return match nop_feed.to_rss_xml() {
-                    Ok(xml) => (
-                        StatusCode::OK,
-                        [(header::CONTENT_TYPE, "application/rss+xml; charset=utf-8")],
-                        xml,
-                    )
-                        .into_response(),
-                    Err(err) => (StatusCode::INTERNAL_SERVER_ERROR, err).into_response(),
-                };
+        Err(e) => match pipeline.handle_fetch_error(&params.url, &params.url, &e).await {
+            Some(nop_feed) => nop_feed,
+            None => {
+                return (
+                    StatusCode::BAD_GATEWAY,
+                    format!("Failed to fetch upstream feed: {}", e),
+                )
+                    .into_response();
             }
-
-            return (
-                StatusCode::BAD_GATEWAY,
-                format!("Failed to fetch upstream feed: {}", e),
-            )
-                .into_response();
-        }
+        },
     };
+
+    // Auto-register in config if it doesn't exist
+    let auto_register = {
+        let cfg = state.config.read().await;
+        cfg.auto_register_proxy_feeds
+    };
+
+    let mut registered_slug = None;
+
+    if auto_register {
+        let mut cfg = state.config.write().await;
+        let existing = cfg.feeds.iter().find(|(_, f)| f.url == params.url).map(|(s, _)| s.clone());
+        if let Some(slug) = existing {
+            registered_slug = Some(slug);
+        } else {
+            let base_slug = crate::opml::slugify(&feed.title);
+            let existing_slugs: HashSet<String> = cfg.feeds.keys().cloned().collect();
+            let slug = crate::opml::unique_slug(&base_slug, &existing_slugs);
+
+            let feed_config = FeedConfig {
+                url: params.url.clone(),
+                title_override: Some(feed.title.clone()),
+                group: params.group.clone().or_else(|| Some("Proxied".to_string())),
+                nop: false,
+                nop_reason: None,
+                filters: FeedFilterConfig {
+                    include_keywords: include_kws,
+                    exclude_keywords: exclude_kws,
+                    include_regex,
+                    exclude_regex,
+                    clean_links: params.clean_links.unwrap_or(true),
+                    max_age_days: params.max_age_days,
+                    max_items: params.limit,
+                    scripts: params.script.into_iter().collect(),
+                },
+            };
+
+            cfg.feeds.insert(slug.clone(), feed_config);
+            registered_slug = Some(slug.clone());
+
+            if let Ok(yaml) = serde_yaml::to_string(&*cfg) {
+                if let Err(e) = std::fs::write(&state.config_path, yaml) {
+                    error!("Failed to persist auto-registered feed to {:?}: {}", state.config_path, e);
+                } else {
+                    info!(
+                        "Auto-registered new feed '{}' as '/feeds/{}' in {:?}",
+                        feed.title,
+                        slug,
+                        state.config_path
+                    );
+                }
+            }
+        }
+    }
 
     // Filter feed
     if let Err(e) = pipeline.process(&mut feed).await {
@@ -579,12 +664,22 @@ async fn handle_proxy_feed(
 
     // Render XML
     match feed.to_rss_xml() {
-        Ok(xml) => (
-            StatusCode::OK,
-            [(header::CONTENT_TYPE, "application/rss+xml; charset=utf-8")],
-            xml,
-        )
-            .into_response(),
+        Ok(xml) => {
+            let mut response = (
+                StatusCode::OK,
+                [(header::CONTENT_TYPE, "application/rss+xml; charset=utf-8")],
+                xml,
+            )
+                .into_response();
+
+            if let Some(slug) = registered_slug {
+                if let Ok(val) = HeaderValue::from_str(&slug) {
+                    response.headers_mut().insert("X-Feed-Slug", val);
+                }
+            }
+
+            response
+        }
         Err(e) => (
             StatusCode::INTERNAL_SERVER_ERROR,
             format!("XML generation error: {}", e),

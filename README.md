@@ -23,7 +23,10 @@ It fetches upstream RSS/Atom/JSON feeds, parses them, applies configurable filte
   - **Aggregated All-in-One Feed**: Subscribe to `http://localhost:8080/feeds` to get posts from all configured feeds in a single chronological stream.
   - **Folder / Group Feeds**: Subscribe to `http://localhost:8080/groups/:group` (e.g. `/groups/business` or `/groups/Engineering Blogs`) to get aggregated posts for a specific category.
   - **Config-Driven Presets**: Define clean, permanent URLs like `http://localhost:8080/feeds/tech-news` in `config.yaml`.
-  - **Dynamic On-the-Fly Proxy**: Subscribe directly via URL query parameters: `http://localhost:8080/proxy?url=https://example.com/feed.xml&exclude=crypto,sponsored`.
+- **Dynamic On-the-Fly Proxy with Auto-Registration**:
+  - Subscribe directly via URL query parameters: `http://localhost:8080/proxy?url=https://example.com/feed.xml&exclude=crypto,sponsored`.
+  - **Auto-Registration**: Any proxied feed URL requested via `/proxy` that is not already in `config.yaml` is automatically saved to `config.yaml` with a clean persistent slug (e.g. `/feeds/example-feed`).
+  - Returns `X-Feed-Slug` in the response headers with the newly assigned slug.
 - **Smart Caching**: In-memory cache with configurable TTL, HTTP `ETag`, and `If-Modified-Since` handling to minimize upstream bandwidth and avoid rate limits.
 
 ---

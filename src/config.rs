@@ -73,6 +73,8 @@ pub struct AppConfig {
     pub cache_ttl_seconds: u64,
     #[serde(default = "default_plugins_dir")]
     pub plugins_dir: String,
+    #[serde(default = "default_true")]
+    pub auto_register_proxy_feeds: bool,
     #[serde(default)]
     pub feeds: HashMap<String, FeedConfig>,
 }
@@ -91,6 +93,7 @@ impl Default for AppConfig {
             server: ServerConfig::default(),
             cache_ttl_seconds: default_cache_ttl(),
             plugins_dir: default_plugins_dir(),
+            auto_register_proxy_feeds: true,
             feeds: HashMap::new(),
         }
     }

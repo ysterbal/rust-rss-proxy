@@ -6,14 +6,23 @@ mod tests {
     use rss_proxy::config::AppConfig;
     use rss_proxy::fetcher::FeedFetcher;
     use rss_proxy::server::{create_router, AppState};
+    use std::path::PathBuf;
     use std::sync::Arc;
+    use tokio::sync::RwLock;
     use tower::ServiceExt;
+
+    fn make_test_state(config: AppConfig, config_path: Option<PathBuf>) -> Arc<AppState> {
+        let fetcher = FeedFetcher::new(60);
+        Arc::new(AppState {
+            config: Arc::new(RwLock::new(config)),
+            config_path: config_path.unwrap_or_else(|| PathBuf::from("test-config.yaml")),
+            fetcher,
+        })
+    }
 
     #[tokio::test]
     async fn test_health_route() {
-        let config = AppConfig::default();
-        let fetcher = FeedFetcher::new(60);
-        let state = Arc::new(AppState { config, fetcher });
+        let state = make_test_state(AppConfig::default(), None);
         let app = create_router(state);
 
         let response = app
@@ -33,9 +42,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_root_status_route() {
-        let config = AppConfig::default();
-        let fetcher = FeedFetcher::new(60);
-        let state = Arc::new(AppState { config, fetcher });
+        let state = make_test_state(AppConfig::default(), None);
         let app = create_router(state);
 
         let response = app
@@ -52,6 +59,7 @@ mod tests {
         let body = response.into_body().collect().await.unwrap().to_bytes();
         let json: serde_json::Value = serde_json::from_slice(&body).unwrap();
         assert_eq!(json["status"], "running");
+        assert_eq!(json["auto_register_proxy_feeds"], true);
     }
 
     #[tokio::test]
@@ -59,8 +67,7 @@ mod tests {
         let mut config = AppConfig::default();
         config.plugins_dir = "./plugins".to_string();
 
-        let fetcher = FeedFetcher::new(60);
-        let state = Arc::new(AppState { config, fetcher });
+        let state = make_test_state(config, None);
         let app = create_router(state);
 
         let response = app
@@ -82,9 +89,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_missing_proxy_url() {
-        let config = AppConfig::default();
-        let fetcher = FeedFetcher::new(60);
-        let state = Arc::new(AppState { config, fetcher });
+        let state = make_test_state(AppConfig::default(), None);
         let app = create_router(state);
 
         let response = app
@@ -116,8 +121,7 @@ mod tests {
             },
         );
 
-        let fetcher = FeedFetcher::new(60);
-        let state = Arc::new(AppState { config, fetcher });
+        let state = make_test_state(config, None);
         let app = create_router(state);
 
         let response = app
@@ -140,9 +144,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_group_route_not_found() {
-        let config = AppConfig::default();
-        let fetcher = FeedFetcher::new(60);
-        let state = Arc::new(AppState { config, fetcher });
+        let state = make_test_state(AppConfig::default(), None);
         let app = create_router(state);
 
         let response = app
@@ -160,9 +162,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_feed_slug_route_not_found() {
-        let config = AppConfig::default();
-        let fetcher = FeedFetcher::new(60);
-        let state = Arc::new(AppState { config, fetcher });
+        let state = make_test_state(AppConfig::default(), None);
         let app = create_router(state);
 
         let response = app
@@ -210,8 +210,7 @@ mod tests {
             },
         );
 
-        let fetcher = FeedFetcher::new(60);
-        let state = Arc::new(AppState { config, fetcher });
+        let state = make_test_state(config, None);
         let app = create_router(state);
 
         let response = app
@@ -229,5 +228,47 @@ mod tests {
         let xml_str = String::from_utf8(body.to_vec()).unwrap();
         assert!(xml_str.contains("<title>Papers with Code [NOP]</title>"));
         assert!(xml_str.contains("403 Forbidden"));
+    }
+
+    #[tokio::test]
+    async fn test_auto_register_proxy_feed_to_config() {
+        let temp_file = tempfile::NamedTempFile::new().unwrap();
+        let temp_path = temp_file.path().to_path_buf();
+
+        let mut config = AppConfig::default();
+        config.auto_register_proxy_feeds = true;
+
+        let state = make_test_state(config, Some(temp_path.clone()));
+        let app = create_router(state.clone());
+
+        // We use a failing URL so it falls back via NopHandlerPlugin and produces a valid feed response
+        let test_url = "https://example.com/never-before-seen-feed.xml";
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .uri(&format!("/proxy?url={}&group=AutoTest&exclude=spam", test_url))
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::OK);
+        assert!(response.headers().contains_key("X-Feed-Slug"));
+
+        // Check in-memory config
+        {
+            let cfg = state.config.read().await;
+            let registered = cfg.feeds.values().find(|f| f.url == test_url);
+            assert!(registered.is_some(), "Feed should be registered in config.feeds");
+            let f = registered.unwrap();
+            assert_eq!(f.group.as_deref(), Some("AutoTest"));
+            assert_eq!(f.filters.exclude_keywords, vec!["spam".to_string()]);
+        }
+
+        // Check persisted file on disk
+        let disk_content = std::fs::read_to_string(&temp_path).unwrap();
+        assert!(disk_content.contains(test_url));
+        assert!(disk_content.contains("AutoTest"));
     }
 }
