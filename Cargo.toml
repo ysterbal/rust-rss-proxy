@@ -1,0 +1,32 @@
+[package]
+name = "rss-proxy"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tokio = { version = "1.43", features = ["full"] }
+axum = "0.8"
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "gzip"] }
+feed-rs = "1.5"
+rss = "2.0"
+quick-xml = "0.31"
+rhai = { version = "1.20", features = ["sync", "serde"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_yaml = "0.9"
+serde_json = "1.0"
+regex = "1.11"
+url = "2.5"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+chrono = { version = "0.4", features = ["serde"] }
+anyhow = "1.0"
+thiserror = "2.0"
+clap = { version = "4.5", features = ["derive"] }
+tower-http = { version = "0.6", features = ["trace", "cors"] }
+async-trait = "0.1"
+
+[dev-dependencies]
+tempfile = "3"
+tower = { version = "0.5", features = ["util"] }
+http-body-util = "0.1"
+
