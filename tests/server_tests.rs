@@ -110,6 +110,8 @@ mod tests {
                 url: "https://example.com/feed.xml".to_string(),
                 title_override: Some("My Test Feed".to_string()),
                 group: Some("Testing".to_string()),
+                nop: false,
+                nop_reason: None,
                 filters: Default::default(),
             },
         );
@@ -191,5 +193,41 @@ mod tests {
         let body = response_slash.into_body().collect().await.unwrap().to_bytes();
         let xml_str = String::from_utf8(body.to_vec()).unwrap();
         assert!(xml_str.contains("<title>RSS Proxy - All Feeds</title>"));
+    }
+
+    #[tokio::test]
+    async fn test_nop_feed_configured_route() {
+        let mut config = AppConfig::default();
+        config.feeds.insert(
+            "pwc-latest".to_string(),
+            rss_proxy::config::FeedConfig {
+                url: "https://us-east1-ml-feeds.cloudfunctions.net/pwc/latest".to_string(),
+                title_override: Some("Papers with Code".to_string()),
+                group: Some("Tech".to_string()),
+                nop: true,
+                nop_reason: Some("403 Forbidden - Policy".to_string()),
+                filters: Default::default(),
+            },
+        );
+
+        let fetcher = FeedFetcher::new(60);
+        let state = Arc::new(AppState { config, fetcher });
+        let app = create_router(state);
+
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .uri("/feeds/pwc-latest")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = response.into_body().collect().await.unwrap().to_bytes();
+        let xml_str = String::from_utf8(body.to_vec()).unwrap();
+        assert!(xml_str.contains("<title>Papers with Code [NOP]</title>"));
+        assert!(xml_str.contains("403 Forbidden"));
     }
 }

@@ -58,6 +58,10 @@ pub struct FeedConfig {
     #[serde(default)]
     pub group: Option<String>,
     #[serde(default)]
+    pub nop: bool,
+    #[serde(default)]
+    pub nop_reason: Option<String>,
+    #[serde(default)]
     pub filters: FeedFilterConfig,
 }
 

@@ -2,7 +2,8 @@ use crate::config::{AppConfig, FeedConfig};
 use crate::fetcher::FeedFetcher;
 use crate::opml::{generate_grouped_opml, ExportableFeed};
 use crate::plugin::builtin::{
-    AgeFilterPlugin, KeywordFilterPlugin, LimitPlugin, LinkCleanerPlugin, RegexFilterPlugin,
+    AgeFilterPlugin, FeedCleanerPlugin, KeywordFilterPlugin, LimitPlugin, LinkCleanerPlugin,
+    NopHandlerPlugin, RegexFilterPlugin,
 };
 use crate::plugin::rhai_plugin::RhaiPlugin;
 use crate::plugin::{Plugin, PluginPipeline};
@@ -140,6 +141,12 @@ async fn handle_export_opml(State(state): State<Arc<AppState>>) -> Response {
 fn build_pipeline_for_feed(feed_cfg: &FeedConfig, plugins_dir: &str) -> Result<PluginPipeline, String> {
     let mut pipeline = PluginPipeline::new();
 
+    // 0. Feed cleaner (sanitizes broken or empty items)
+    pipeline.add_plugin(Box::new(FeedCleanerPlugin::new()));
+
+    // 0.1 NOP handler fallback (catches fetch/parse errors and serves valid NOP feed)
+    pipeline.add_plugin(Box::new(NopHandlerPlugin::new()));
+
     // 1. Built-in keyword filter
     if !feed_cfg.filters.include_keywords.is_empty() || !feed_cfg.filters.exclude_keywords.is_empty() {
         pipeline.add_plugin(Box::new(KeywordFilterPlugin::new(
@@ -269,10 +276,16 @@ async fn render_aggregated_feed(
     let mut all_items = Vec::new();
 
     for (slug, feed_cfg) in feeds_to_include {
+        // Skip NOP feeds in aggregate view so dead feeds don't clutter the timeline
+        if feed_cfg.nop {
+            continue;
+        }
+
         let mut feed = match state.fetcher.fetch(&feed_cfg.url).await {
             Ok(f) => f,
             Err(e) => {
-                error!("Failed to fetch upstream feed for {}: {}", slug, e);
+                // Skip dead feeds in the aggregated view instead of failing
+                error!("Skipping failed feed in aggregate view {}: {}", slug, e);
                 continue;
             }
         };
@@ -358,6 +371,29 @@ async fn handle_configured_feed(
         }
     };
 
+    let feed_title = feed_cfg
+        .title_override
+        .as_deref()
+        .unwrap_or(clean_slug);
+
+    // 0. If marked as NOP in config, serve NOP feed immediately without fetching upstream
+    if feed_cfg.nop {
+        let reason = feed_cfg
+            .nop_reason
+            .as_deref()
+            .unwrap_or("Marked as NOP in configuration");
+        let nop_feed = NopHandlerPlugin::make_nop_feed(&feed_cfg.url, feed_title, reason);
+        return match nop_feed.to_rss_xml() {
+            Ok(xml) => (
+                StatusCode::OK,
+                [(header::CONTENT_TYPE, "application/rss+xml; charset=utf-8")],
+                xml,
+            )
+                .into_response(),
+            Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, e).into_response(),
+        };
+    }
+
     // 1. Build pipeline
     let pipeline = match build_pipeline_for_feed(feed_cfg, &state.config.plugins_dir) {
         Ok(p) => p,
@@ -367,10 +403,22 @@ async fn handle_configured_feed(
         }
     };
 
-    // 2. Fetch feed
+    // 2. Fetch feed (with automatic NOP fallback if upstream fails)
     let mut feed = match state.fetcher.fetch(&feed_cfg.url).await {
         Ok(f) => f,
         Err(e) => {
+            if let Some(nop_feed) = pipeline.handle_fetch_error(&feed_cfg.url, feed_title, &e).await {
+                return match nop_feed.to_rss_xml() {
+                    Ok(xml) => (
+                        StatusCode::OK,
+                        [(header::CONTENT_TYPE, "application/rss+xml; charset=utf-8")],
+                        xml,
+                    )
+                        .into_response(),
+                    Err(err) => (StatusCode::INTERNAL_SERVER_ERROR, err).into_response(),
+                };
+            }
+
             error!("Failed to fetch upstream feed {}: {}", feed_cfg.url, e);
             return (
                 StatusCode::BAD_GATEWAY,
@@ -419,6 +467,10 @@ async fn handle_proxy_feed(
     }
 
     let mut pipeline = PluginPipeline::new();
+
+    // Default cleaner & NOP fallback
+    pipeline.add_plugin(Box::new(FeedCleanerPlugin::new()));
+    pipeline.add_plugin(Box::new(NopHandlerPlugin::new()));
 
     // Keywords
     let include_kws: Vec<String> = params
@@ -496,6 +548,18 @@ async fn handle_proxy_feed(
     let mut feed = match state.fetcher.fetch(&params.url).await {
         Ok(f) => f,
         Err(e) => {
+            if let Some(nop_feed) = pipeline.handle_fetch_error(&params.url, &params.url, &e).await {
+                return match nop_feed.to_rss_xml() {
+                    Ok(xml) => (
+                        StatusCode::OK,
+                        [(header::CONTENT_TYPE, "application/rss+xml; charset=utf-8")],
+                        xml,
+                    )
+                        .into_response(),
+                    Err(err) => (StatusCode::INTERNAL_SERVER_ERROR, err).into_response(),
+                };
+            }
+
             return (
                 StatusCode::BAD_GATEWAY,
                 format!("Failed to fetch upstream feed: {}", e),

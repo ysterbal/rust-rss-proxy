@@ -35,6 +35,11 @@ pub trait Plugin: Send + Sync {
     async fn post_process_feed(&self, _feed: &mut Feed) -> anyhow::Result<()> {
         Ok(())
     }
+
+    /// Invoked when upstream feed fails to fetch or parse. Returns an optional fallback Feed (e.g., NOP feed)
+    async fn on_fetch_error(&self, _url: &str, _title: &str, _error: &anyhow::Error) -> Option<Feed> {
+        None
+    }
 }
 
 pub struct PluginPipeline {
@@ -51,6 +56,16 @@ impl PluginPipeline {
     pub fn add_plugin(&mut self, plugin: Box<dyn Plugin>) {
         info!("Registered plugin: {}", plugin.name());
         self.plugins.push(plugin);
+    }
+
+    /// Handle upstream fetch errors by delegating to plugins that implement on_fetch_error
+    pub async fn handle_fetch_error(&self, url: &str, title: &str, error: &anyhow::Error) -> Option<Feed> {
+        for plugin in &self.plugins {
+            if let Some(fallback) = plugin.on_fetch_error(url, title, error).await {
+                return Some(fallback);
+            }
+        }
+        None
     }
 
     /// Process a feed through all stages of the pipeline:

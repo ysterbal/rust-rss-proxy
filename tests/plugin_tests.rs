@@ -184,4 +184,48 @@ mod tests {
         assert!(!xml.contains("Spam post"));
         assert!(!xml.contains("utm_source"));
     }
+
+    #[tokio::test]
+    async fn test_nop_handler_plugin() {
+        let plugin = NopHandlerPlugin::new();
+        let err = anyhow::anyhow!("403 Forbidden - Not allowed by policy");
+
+        let nop_feed = plugin
+            .on_fetch_error("https://example.com/bad", "Broken Feed", &err)
+            .await
+            .expect("Should produce a NOP feed");
+
+        assert_eq!(nop_feed.title, "Broken Feed [NOP]");
+        assert!(nop_feed.description.contains("403 Forbidden"));
+        assert_eq!(nop_feed.items.len(), 0);
+
+        let xml = nop_feed.to_rss_xml().unwrap();
+        assert!(xml.contains("<title>Broken Feed [NOP]</title>"));
+    }
+
+    #[tokio::test]
+    async fn test_feed_cleaner_plugin() {
+        let cleaner = FeedCleanerPlugin::new();
+
+        // 1. Corrupt empty item should be dropped
+        let empty_item = FeedItem {
+            id: "".to_string(),
+            title: "".to_string(),
+            link: "".to_string(),
+            description: "".to_string(),
+            content: None,
+            author: None,
+            published: None,
+            updated: None,
+            categories: vec![],
+        };
+        assert_eq!(cleaner.filter_item(&empty_item).await.unwrap(), FilterDecision::Drop);
+
+        // 2. Normal item with messy whitespace should be cleaned
+        let mut messy_item = sample_item("  Multi-space   title  here ", "https://example.com/ok", "  some desc  ");
+        assert_eq!(cleaner.filter_item(&messy_item).await.unwrap(), FilterDecision::Keep);
+        cleaner.transform_item(&mut messy_item).await.unwrap();
+        assert_eq!(messy_item.title, "Multi-space title here");
+        assert_eq!(messy_item.description, "some desc");
+    }
 }

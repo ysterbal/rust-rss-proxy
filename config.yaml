@@ -632,6 +632,8 @@ feeds:
     url: https://us-east1-ml-feeds.cloudfunctions.net/pwc/latest
     title_override: 'Papers with Code: Latest (unofficial)'
     group: Tech
+    nop: true
+    nop_reason: 'HTTP 403 Forbidden (policy)'
     filters:
       include_keywords: []
       exclude_keywords: []

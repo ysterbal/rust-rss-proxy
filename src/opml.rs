@@ -179,6 +179,8 @@ pub fn import_opml_into_config<P1: AsRef<Path>, P2: AsRef<Path>>(
             url: feed.xml_url.clone(),
             title_override: Some(feed.title.clone()),
             group: feed.category.clone(),
+            nop: false,
+            nop_reason: None,
             filters: FeedFilterConfig {
                 clean_links: true,
                 ..Default::default()

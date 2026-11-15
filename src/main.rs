@@ -48,6 +48,15 @@ enum Commands {
         #[arg(short, long)]
         output: Option<PathBuf>,
     },
+    /// Test all configured feeds, identify dead/failing URLs, and optionally mark them as NOP in config.yaml
+    AuditFeeds {
+        /// Automatically mark failing/unreachable feeds as nop: true in config.yaml
+        #[arg(long)]
+        mark_nop: bool,
+        /// Request timeout in seconds per feed
+        #[arg(long, default_value_t = 8)]
+        timeout: u64,
+    },
 }
 
 #[tokio::main]
@@ -120,6 +129,85 @@ async fn main() -> anyhow::Result<()> {
                 );
             } else {
                 print!("{}", opml_content);
+            }
+        }
+        Commands::AuditFeeds { mark_nop, timeout } => {
+            let mut config = config::AppConfig::load_or_default(&cli.config)?;
+            println!("Auditing {} feed(s) in {} (timeout: {}s)...", config.feeds.len(), cli.config.display(), timeout);
+
+            let client = reqwest::Client::builder()
+                .timeout(std::time::Duration::from_secs(timeout))
+                .user_agent("rss-proxy/0.1.0 (+https://github.com/rust-rss-proxy)")
+                .build()?;
+
+            let mut healthy_count = 0;
+            let mut failing_count = 0;
+            let mut updated_config = false;
+
+            for (slug, cfg) in config.feeds.iter_mut() {
+                let title = cfg.title_override.as_deref().unwrap_or(slug);
+
+                let check_result = match client.get(&cfg.url).send().await {
+                    Ok(resp) => {
+                        let status = resp.status();
+                        if status.is_success() {
+                            match resp.bytes().await {
+                                Ok(bytes) => match feed_rs::parser::parse(&bytes[..]) {
+                                    Ok(parsed) => Ok(parsed.entries.len()),
+                                    Err(err) => Err(format!("Invalid feed XML ({})", err)),
+                                },
+                                Err(err) => Err(format!("Failed to read body ({})", err)),
+                            }
+                        } else {
+                            Err(format!("HTTP {}", status))
+                        }
+                    }
+                    Err(err) => {
+                        if err.is_timeout() {
+                            Err("Timed out".to_string())
+                        } else {
+                            Err(format!("Network error ({})", err))
+                        }
+                    }
+                };
+
+                match check_result {
+                    Ok(count) => {
+                        healthy_count += 1;
+                        if cfg.nop {
+                            // Recovered feed!
+                            println!("  [RECOVERED] {} ({} items)", title, count);
+                            if mark_nop {
+                                cfg.nop = false;
+                                cfg.nop_reason = None;
+                                updated_config = true;
+                            }
+                        } else {
+                            println!("  [OK]        {} ({} items)", title, count);
+                        }
+                    }
+                    Err(reason) => {
+                        failing_count += 1;
+                        println!("  [NOP]       {} - {} ({})", title, reason, cfg.url);
+                        if mark_nop && (!cfg.nop || cfg.nop_reason.as_deref() != Some(&reason)) {
+                            cfg.nop = true;
+                            cfg.nop_reason = Some(reason);
+                            updated_config = true;
+                        }
+                    }
+                }
+            }
+
+            println!("\nAudit summary:");
+            println!("  Healthy feeds: {}", healthy_count);
+            println!("  Failing feeds: {}", failing_count);
+
+            if mark_nop && updated_config {
+                let yaml = serde_yaml::to_string(&config)?;
+                std::fs::write(&cli.config, yaml)?;
+                println!("\nUpdated {} with NOP flags.", cli.config.display());
+            } else if !mark_nop && failing_count > 0 {
+                println!("\nTip: Run with --mark-nop to automatically flag failing feeds in {}.", cli.config.display());
             }
         }
     }
