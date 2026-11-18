@@ -2,4 +2,6 @@
 **/*.rs.bk
 *.swp
 *.DS_Store
+Cargo.lock
 config.yaml
+*.saved

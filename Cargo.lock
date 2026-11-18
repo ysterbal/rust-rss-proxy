@@ -1410,7 +1410,7 @@ dependencies = [
 
 [[package]]
 name = "rss-proxy"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1428,7 +1428,6 @@ dependencies = [
  "serde_json",
  "serde_yaml",
  "tempfile",
- "thiserror",
  "tokio",
  "tower",
  "tower-http",
