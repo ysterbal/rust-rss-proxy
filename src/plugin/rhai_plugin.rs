@@ -49,7 +49,7 @@ impl RhaiPlugin {
         if let Ok(entries) = std::fs::read_dir(dir) {
             for entry in entries.flatten() {
                 let p = entry.path();
-                if p.is_file() && p.extension().map_or(false, |ext| ext == "rhai") {
+                if p.is_file() && p.extension().is_some_and(|ext| ext == "rhai") {
                     match Self::from_file(&p) {
                         Ok(plugin) => plugins.push(plugin),
                         Err(e) => warn!("Error loading Rhai plugin at {:?}: {}", p, e),

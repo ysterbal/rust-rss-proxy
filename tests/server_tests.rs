@@ -59,8 +59,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_plugins_list_route() {
-        let mut config = AppConfig::default();
-        config.plugins_dir = "./plugins".to_string();
+        let config = AppConfig::default();
 
         let state = make_test_state(config, None);
         let app = create_router(state);
@@ -230,8 +229,7 @@ mod tests {
         let temp_file = tempfile::NamedTempFile::new().unwrap();
         let temp_path = temp_file.path().to_path_buf();
 
-        let mut config = AppConfig::default();
-        config.auto_register_proxy_feeds = true;
+        let config = AppConfig::default();
 
         let state = make_test_state(config, Some(temp_path.clone()));
         let app = create_router(state.clone());
@@ -241,7 +239,7 @@ mod tests {
         let response = app
             .oneshot(
                 Request::builder()
-                    .uri(&format!(
+                    .uri(format!(
                         "/proxy?url={}&group=AutoTest&exclude=spam",
                         test_url
                     ))

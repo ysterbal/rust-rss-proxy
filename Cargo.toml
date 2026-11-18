@@ -2,6 +2,14 @@
 name = "rss-proxy"
 version = "0.1.0"
 edition = "2021"
+authors = ["RSS Proxy Contributors <contributors@rust-rss-proxy.example>"]
+description = "A high-performance, extensible RSS/Atom proxy and filtering server written in Rust"
+license = "MIT"
+repository = "https://github.com/rust-rss-proxy/rss-proxy"
+homepage = "https://github.com/rust-rss-proxy/rss-proxy"
+documentation = "https://docs.rs/rss-proxy"
+keywords = ["rss", "atom", "feed", "proxy", "filtering"]
+categories = ["web-programming::http-server", "command-line-utilities"]
 
 [dependencies]
 tokio = { version = "1.43", features = ["full"] }

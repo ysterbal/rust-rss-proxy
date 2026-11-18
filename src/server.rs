@@ -16,15 +16,60 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
+use std::net::IpAddr;
 use std::path::PathBuf;
 use std::sync::Arc;
 use tokio::sync::RwLock;
 use tracing::{error, info};
+use url::Url;
 
 pub struct AppState {
     pub config: Arc<RwLock<AppConfig>>,
     pub config_path: PathBuf,
     pub fetcher: FeedFetcher,
+}
+
+/// Validate URL to prevent Server-Side Request Forgery (SSRF) attacks
+fn validate_url_for_ssrf(url: &str) -> Result<(), &'static str> {
+    let parsed = Url::parse(url).map_err(|_| "Invalid URL")?;
+
+    // Only allow http and https schemes
+    if parsed.scheme() != "http" && parsed.scheme() != "https" {
+        return Err("URL must use http or https scheme");
+    }
+
+    // Get the host
+    let host = parsed.host_str().ok_or("URL must have a valid host")?;
+
+    // Check if host is localhost or loopback variants
+    if host == "localhost" || host == "127.0.0.1" || host == "::1" || host == "[::1]" {
+        return Err("URL cannot point to localhost or loopback address");
+    }
+
+    // Check if host is an IP address
+    if let Ok(ip) = host.parse::<IpAddr>() {
+        // Check for private/internal IP addresses and cloud metadata endpoints
+        match ip {
+            IpAddr::V4(ipv4) => {
+                if ipv4.is_loopback()
+                    || ipv4.is_private()
+                    || ipv4.is_link_local()
+                    || ipv4.is_broadcast()
+                    || ipv4 == std::net::Ipv4Addr::new(169, 254, 169, 254)
+                // AWS/GCP metadata
+                {
+                    return Err("URL cannot point to private or internal IP address");
+                }
+            }
+            IpAddr::V6(ipv6) => {
+                if ipv6.is_loopback() || ipv6.is_unique_local() || ipv6.is_unicast_link_local() {
+                    return Err("URL cannot point to private or internal IP address");
+                }
+            }
+        }
+    }
+
+    Ok(())
 }
 
 #[derive(Debug, Deserialize)]
@@ -522,6 +567,15 @@ async fn handle_proxy_feed(
         return (
             StatusCode::BAD_REQUEST,
             "Missing required 'url' query parameter",
+        )
+            .into_response();
+    }
+
+    // Validate URL to prevent SSRF attacks
+    if let Err(e) = validate_url_for_ssrf(&params.url) {
+        return (
+            StatusCode::BAD_REQUEST,
+            format!("Invalid or unsafe URL: {}", e),
         )
             .into_response();
     }

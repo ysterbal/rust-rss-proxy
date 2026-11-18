@@ -139,3 +139,9 @@ impl PluginPipeline {
         Ok(())
     }
 }
+
+impl Default for PluginPipeline {
+    fn default() -> Self {
+        Self::new()
+    }
+}
