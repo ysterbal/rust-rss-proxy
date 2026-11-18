@@ -1,6 +1,6 @@
 [package]
 name = "rss-proxy"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 authors = ["RSS Proxy Contributors <contributors@rust-rss-proxy.example>"]
 description = "A high-performance, extensible RSS/Atom proxy and filtering server written in Rust"
