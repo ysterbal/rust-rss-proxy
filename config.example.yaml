@@ -1,0 +1,23 @@
+server:
+  host: 127.0.0.1
+  port: 8080
+cache_ttl_seconds: 300
+plugins_dir: ./plugins
+auto_register_proxy_feeds: true
+feeds:
+  # Example feed configuration
+  # my-feed:
+  #   url: https://example.com/feed.xml
+  #   title_override: My Custom Feed
+  #   group: Technology
+  #   nop: false
+  #   nop_reason: null
+  #   filters:
+  #     include_keywords: []
+  #     exclude_keywords: []
+  #     include_regex: []
+  #     exclude_regex: []
+  #     clean_links: true
+  #     max_age_days: null
+  #     max_items: null
+  #     scripts: []

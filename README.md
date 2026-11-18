@@ -1,313 +1,334 @@
-# RSS Proxy Server
+# RSS Proxy
 
-A high-performance, extensible RSS/Atom proxy and filtering server written in Rust with dynamic plugin support.
+A high-performance, extensible RSS/Atom proxy and filtering server written in Rust. Route, filter, and transform feed content through a unified API with plugin-based extensibility.
 
-It fetches upstream RSS/Atom/JSON feeds, parses them, applies configurable filtering and content transformation pipelines (including built-in filters and user-authored script plugins), and serves clean RSS 2.0 feeds to your RSS reader (NetNewsWire, Reeder, FreshRSS, Miniflux, etc.).
+[![Build Status](https://github.com/rust-rss-proxy/rss-proxy/actions/workflows/ci.yml/badge.svg)](https://github.com/rust-rss-proxy/rss-proxy/actions)
+[![Version](https://img.shields.io/crates/v/rss-proxy.svg)](https://crates.io/crates/rss-proxy)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+## Table of Contents
+
+- [Features](#features)
+- [Why RSS Proxy?](#why-rss-proxy)
+- [Quick Start](#quick-start)
+  - [Installation](#installation)
+    - [Pre-built Binaries](#pre-built-binaries)
+    - [From Source](#from-source)
+    - [Docker](#docker)
+  - [Running the Server](#running-the-server)
+- [Configuration](#configuration)
+- [CLI Commands](#cli-commands)
+  - [Serve](#serve)
+  - [Import OPML](#import-opml)
+  - [Export OPML](#export-opml)
+  - [Audit Feeds](#audit-feeds)
+- [API Endpoints](#api-endpoints)
+- [Plugins and Filtering](#plugins-and-filtering)
+- [Uninstall / Cleanup](#uninstall--cleanup)
+- [Contributing](#contributing)
+- [License](#license)
 
 ---
 
 ## Features
 
-- **Blazing Fast & Low Memory**: Built with Rust, Axum, and Tokio. Consumes < 15MB RAM with sub-millisecond filtering times.
-- **Universal Feed Support**: Automatically parses RSS 0.9x, 1.0, 2.0, Atom 0.3/1.0, and JSON Feed formats via `feed-rs`.
-- **Extensible Plugin System**:
-  - **Embedded Script Plugins (Rhai)**: Drop `.rhai` script files into the `plugins/` directory to write custom filter and mutation rules on the fly with no compilation or server restart required.
-  - **Native Rust Plugins**: Extensible `Plugin` trait for compiled pipeline hooks.
-- **Built-in Filters**:
-  - **Keyword Filter**: Case-insensitive include and exclude matching across title, description, content, author, and categories.
-  - **Regex Filter**: Match complex patterns across all feed fields.
-  - **Link Cleaner**: Automatically strips tracking queries (`utm_source`, `utm_medium`, `fbclid`, `gclid`, etc.) from article links and GUIDs.
-  - **Age Filter**: Automatically drops articles older than a specified number of days or hours.
-  - **Item Limiter**: Caps maximum items in the output feed.
-- **Three Routing Modes**:
-  - **Aggregated All-in-One Feed**: Subscribe to `http://localhost:8080/feeds` to get posts from all configured feeds in a single chronological stream.
-  - **Folder / Group Feeds**: Subscribe to `http://localhost:8080/groups/:group` (e.g. `/groups/business` or `/groups/Engineering Blogs`) to get aggregated posts for a specific category.
-  - **Config-Driven Presets**: Define clean, permanent URLs like `http://localhost:8080/feeds/tech-news` in `config.yaml`.
-- **Dynamic On-the-Fly Proxy with Auto-Registration**:
-  - Subscribe directly via URL query parameters: `http://localhost:8080/proxy?url=https://example.com/feed.xml&exclude=crypto,sponsored`.
-  - **Auto-Registration**: Any proxied feed URL requested via `/proxy` that is not already in `config.yaml` is automatically saved to `config.yaml` with a clean persistent slug (e.g. `/feeds/example-feed`).
-  - Returns `X-Feed-Slug` in the response headers with the newly assigned slug.
-- **Smart Caching**: In-memory cache with configurable TTL, HTTP `ETag`, and `If-Modified-Since` handling to minimize upstream bandwidth and avoid rate limits.
+- **Proxy Feeds**: Fetch and serve RSS/Atom feeds through a unified proxy API
+- **Dynamic Filtering**: Filter feeds by keywords, regex patterns, age, and item limits
+- **Plugin Architecture**: Extend functionality with built-in plugins or custom Rhai scripts
+- **OPML Import/Export**: Import subscriptions from OPML files and export proxied feeds
+- **Feed Auditing**: Test configured feeds and identify dead/failing URLs
+- **High Performance**: Built with Rust, tokio, and axum for fast, concurrent feed processing
+
+## Why RSS Proxy?
+
+Managing multiple RSS feeds across different sources often requires:
+- Filtering out spam or unwanted content
+- Grouping feeds by category for organized reading
+- Handling feed URLs that change or require authentication proxies
+
+**RSS Proxy differentiates itself by:**
+
+| Feature | RSS Proxy | Other Proxies |
+|---------|-----------|---------------|
+| Plugin-based filtering | ✅ Rhai scripts + built-in plugins | ❌ Static config only |
+| OPML import/export | ✅ Full support with folder hierarchy | ⚠️ Limited or none |
+| Feed auditing | ✅ Test and auto-mark failing feeds | ❌ Manual testing required |
+| Performance | ✅ Rust + tokio async | ⚠️ Python/Node.js overhead |
+| Zero dependencies | ✅ Single binary release | ❌ Requires runtime environment |
 
 ---
 
-## Architecture
+## Quick Start
 
-```
-[RSS Client] ────────► [Axum HTTP Router]
-                             │
-                             ├── GET /feeds/:slug  (Config-driven presets)
-                             ├── GET /proxy?url=   (Dynamic query proxy)
-                             └── GET /plugins      (List loaded plugins)
-                                     │
-                             ▼
-                   [Feed Fetcher + Cache]
-                   (ETags, Last-Modified, TTL)
-                             │
-                             ▼
-                    [feed-rs Parser]
-                             │
-                             ▼
-                   [Plugin Pipeline]
-        ┌──────────────────────────────────────────────┐
-        │ 1. pre_process_feed()                        │
-        │ 2. filter_item() -> Keep / Drop              │
-        │    - Built-in KeywordFilterPlugin            │
-        │    - Built-in RegexFilterPlugin              │
-        │    - Built-in AgeFilterPlugin                │
-        │    - Rhai Script Plugins (*.rhai)            │
-        │ 3. transform_item() -> Mutate FeedItem       │
-        │    - Built-in LinkCleanerPlugin (Strip UTMs) │
-        │    - Rhai Script Plugins (*.rhai)            │
-        │ 4. post_process_feed()                       │
-        │    - Built-in LimitPlugin                    │
-        └──────────────────────────────────────────────┘
-                             │
-                             ▼
-                    [RSS 2.0 Generator]
-                             │
-[Clean RSS Feed] ◄───────────┘
-```
+### Installation
 
----
+#### Pre-built Binaries
 
-## Quickstart
-
-### 1. Build and Run
+Download the latest release from the [GitHub Releases page](https://github.com/rust-rss-proxy/rss-proxy/releases):
 
 ```bash
-# Build the project
+# Linux (x86_64)
+curl -L https://github.com/rust-rss-proxy/rss-proxy/releases/latest/download/rss-proxy-x86_64-unknown-linux-gnu.tar.gz | tar -xz
+sudo mv rss-proxy /usr/local/bin/
+
+# macOS (x86_64 / arm64)
+curl -L https://github.com/rust-rss-proxy/rss-proxy/releases/latest/download/rss-proxy-x86_64-apple-darwin.tar.gz | tar -xz
+sudo mv rss-proxy /usr/local/bin/
+```
+
+#### From Source
+
+Ensure you have Rust 1.75+ installed ([rustup.rs](https://rustup.rs/)), then:
+
+```bash
+git clone https://github.com/rust-rss-proxy/rss-proxy.git
+cd rss-proxy
 cargo build --release
-
-# Run with default configuration (reads config.yaml on port 8080)
-./target/release/rss-proxy
-
-# Or override port and config
-./target/release/rss-proxy --config config.yaml --port 9090
+cp target/release/rss-proxy /usr/local/bin/
 ```
 
-### 2. Verify Server Status
+#### Docker
+
+Build and run using Docker Compose:
 
 ```bash
-curl http://localhost:8080/
+git clone https://github.com/rust-rss-proxy/rss-proxy.git
+cd rss-proxy
+docker-compose up -d
 ```
 
-Returns:
-```json
-{
-  "status": "running",
-  "version": "0.1.0",
-  "configured_feeds": ["tech-news", "rust-releases"],
-  "available_plugins": ["filter_sponsors", "tag_and_prefix"]
-}
+The proxy will be available at `http://localhost:8080`.
+
+### Running the Server
+
+Start the server with the default configuration (`config.yaml` on port 8080):
+
+```bash
+rss-proxy serve
+```
+
+Or specify custom host and port:
+
+```bash
+rss-proxy serve --host 0.0.0.0 --port 3000 --config /path/to/config.yaml
 ```
 
 ---
 
-## OPML Import & Export
+## Configuration
 
-### 1. Import an OPML File into `config.yaml`
-
-Import your existing subscriptions from NetNewsWire, Reeder, Feedly, etc.:
-
-```bash
-# Preview discovered feeds without modifying config
-cargo run --release -- import-opml /path/to/subscriptions.opml --dry-run
-
-# Import and merge into config.yaml
-cargo run --release -- import-opml /path/to/subscriptions.opml
-```
-
-The importer automatically:
-- Recursively parses folder structures and feed entries
-- Generates clean, unique, URL-safe slugs (`Hacker News` -> `hacker-news`)
-- Preserves existing configured feeds and server settings in `config.yaml`
-- Adds link-cleaning by default, ready for your custom keywords/regex/plugins
-
-### 2. Export Proxied Feeds to OPML (For Your RSS Reader)
-
-Export all your configured proxied feeds as an OPML file pointing to the proxy server:
-
-```bash
-# Export to a file
-cargo run --release -- export-opml --output proxied-subscriptions.opml
-
-# Or specify a custom base URL
-cargo run --release -- export-opml --base-url http://192.168.1.100:8080 -o subscriptions.opml
-```
-
-You can then import `proxied-subscriptions.opml` directly into your RSS reader.
-
-### 3. Dynamic OPML HTTP Endpoint
-
-While the server is running, you can also fetch your proxied subscriptions at:
-```
-http://localhost:8080/opml
-```
-
----
-
-## Configuration (`config.yaml`)
-
-Define feeds and pipeline rules in `config.yaml`:
+The server is configured via `config.yaml`. A sample configuration:
 
 ```yaml
 server:
-  host: "127.0.0.1"
+  host: 127.0.0.1
   port: 8080
-
-cache_ttl_seconds: 300 # Cache upstream responses for 5 minutes
-plugins_dir: "./plugins"
-
+cache_ttl_seconds: 300
+plugins_dir: ./plugins
+auto_register_proxy_feeds: true
 feeds:
-  tech-news:
-    url: "https://hnrss.org/frontpage"
-    title_override: "Hacker News (Filtered)"
+  my-feed:
+    url: https://example.com/feed.xml
+    title_override: My Custom Feed
+    group: Technology
+    nop: false
+    nop_reason: null
     filters:
-      exclude_keywords:
-        - "crypto"
-        - "nft"
-        - "sponsored"
+      include_keywords: []
+      exclude_keywords: []
+      include_regex: []
+      exclude_regex: []
       clean_links: true
-      max_items: 25
-      scripts:
-        - "filter_sponsors" # Refers to plugins/filter_sponsors.rhai
-
-  rust-releases:
-    url: "https://blog.rust-lang.org/feed.xml"
-    title_override: "Rust Official Releases"
-    filters:
-      include_regex:
-        - "(?i)announcing rust"
-      clean_links: true
-      max_age_days: 60
-```
-
-Subscribe your RSS reader to:
-`http://localhost:8080/feeds/tech-news`
-
----
-
-## Dynamic Query Parameter Proxy
-
-You can also proxy feeds dynamically without editing `config.yaml`:
-
-```
-http://localhost:8080/proxy?url=<FEED_URL>&exclude=<KW1,KW2>&include=<KW>&clean_links=true&limit=20&script=<SCRIPT_NAME>
-```
-
-### Supported Parameters:
-
-| Parameter | Type | Description |
-| :--- | :--- | :--- |
-| `url` | String (Required) | The upstream feed URL |
-| `exclude` | Comma-separated | Keywords that trigger item removal |
-| `include` | Comma-separated | At least one keyword must be present |
-| `exclude_regex` | Regex | Regex pattern that triggers item removal |
-| `include_regex` | Regex | Regex pattern that items must match |
-| `clean_links` | Boolean (default: `true`) | Strips `utm_*`, `fbclid`, and analytics query params |
-| `max_age_days` | Integer | Drops items older than N days |
-| `limit` | Integer | Limits maximum number of output entries |
-| `script` | String | Name of a Rhai plugin in `plugins/` |
-
-**Example:**
-```
-http://localhost:8080/proxy?url=https://hnrss.org/frontpage&exclude=show%20hn,crypto&clean_links=true&limit=15
+      max_age_days: null
+      max_items: null
+      scripts: []
 ```
 
 ---
 
-## Developing Plugins
+## CLI Commands
 
-Plugins allow you to create custom filtering and transformation logic.
+### Serve
 
-### 1. Rhai Script Plugins (No Compilation Needed)
+Start the RSS proxy server (default behavior):
 
-Drop any `.rhai` script into the `plugins/` directory.
-
-#### Available Properties on `item`:
-- `item.id`: Unique GUID or link (string)
-- `item.title`: Article title (string)
-- `item.link`: Article link (string)
-- `item.description`: Article summary/snippet (string)
-- `item.content`: Full HTML/text if available (string)
-- `item.author`: Author name (string)
-- `item.categories`: Array of tags/categories (`["tech", "news"]`)
-
-#### Example: `plugins/filter_sponsors.rhai`
-```rhai
-// Drop articles matching custom conditions
-fn filter_item(item) {
-    let lower_title = item.title.to_lower();
-    let lower_desc = item.description.to_lower();
-
-    if lower_title.contains("sponsored") || lower_desc.contains("sponsored by") {
-        return "drop"; // or return false;
-    }
-
-    return "keep"; // or return true;
-}
+```bash
+rss-proxy serve
 ```
 
-#### Example: `plugins/tag_and_prefix.rhai`
+### Import OPML
+
+Import feeds from an OPML subscription file into `config.yaml`:
+
+```bash
+# Preview discovered feeds without modifying config.yaml
+rss-proxy import-opml subscriptions.opml --dry-run
+
+# Import and update config.yaml
+rss-proxy import-opml subscriptions.opml
+```
+
+### Export OPML
+
+Export configured proxied feeds to an OPML file for your RSS reader:
+
+```bash
+# Export to stdout
+rss-proxy export-opml
+
+# Export to a file
+rss-proxy export-opml --output proxied-subscriptions.opml
+
+# Specify base URL
+rss-proxy export-opml --base-url http://proxy.example.com --output proxied-subscriptions.opml
+```
+
+### Audit Feeds
+
+Test all configured feeds, identify dead/failing URLs, and optionally mark them as NOP in `config.yaml`:
+
+```bash
+# Test feeds with default 8s timeout
+rss-proxy audit-feeds
+
+# Test with custom timeout and auto-mark failing feeds
+rss-proxy audit-feeds --mark-nop --timeout 10
+```
+
+---
+
+## API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/` | GET | Server status and configured feeds |
+| `/health` | GET | Health check endpoint |
+| `/plugins` | GET | List available plugins |
+| `/opml` | GET | Export OPML of configured feeds |
+| `/feeds` | GET | List all configured feeds |
+| `/feeds/{slug}` | GET | Fetch a specific configured feed |
+| `/groups/{group}` | GET | Fetch feeds grouped by category |
+| `/proxy?url=<url>` | GET | Proxy a feed by URL with optional filters |
+
+### Proxy Feed Example
+
+```bash
+# Proxy a feed with keyword filtering
+curl "http://localhost:8080/proxy?url=https://example.com/feed.xml&exclude=spam&limit=10"
+
+# Proxy with custom script
+curl "http://localhost:8080/proxy?url=https://example.com/feed.xml&script=modify_title(item) { item.title = 'Custom: ' + item.title; item }"
+```
+
+---
+
+## Plugins and Filtering
+
+RSS Proxy supports both built-in plugins and custom Rhai scripts for feed transformation:
+
+### Built-in Plugins
+
+- **KeywordFilterPlugin**: Include/exclude items by keywords
+- **RegexFilterPlugin**: Include/exclude items by regex patterns
+- **AgeFilterPlugin**: Filter items by age (days)
+- **LimitPlugin**: Limit the number of items returned
+- **LinkCleanerPlugin**: Clean and normalize links in feed content
+- **FeedCleanerPlugin**: General feed content cleaning
+- **NopHandlerPlugin**: Mark feeds as disabled (NOP)
+
+### Custom Rhai Scripts
+
+Write custom Rhai scripts in the `plugins/` directory to transform feed items:
+
 ```rhai
-// Mutate or sanitize articles
-fn transform_item(item) {
-    let lower_title = item.title.to_lower();
-
-    if lower_title.contains("rust") && !item.title.starts_with("[Rust]") {
-        item.title = "[Rust] " + item.title;
+// plugins/modify_title.rhai
+export function modify_title(item) {
+    if item.title.contains("SPAM:") {
+        return null; // Filter out
     }
-
+    item.title = "Featured: " + item.title;
     return item;
 }
 ```
 
-### 2. Native Rust Plugins
+---
 
-Implement the `Plugin` trait in `src/plugin/mod.rs`:
+## Uninstall / Cleanup
 
-```rust
-use async_trait::async_trait;
-use crate::model::{Feed, FeedItem};
-use crate::plugin::{FilterDecision, Plugin};
+### Removing the Binary
 
-pub struct MyCustomPlugin;
+```bash
+# If installed via cargo
+cargo uninstall rss-proxy
 
-#[async_trait]
-impl Plugin for MyCustomPlugin {
-    fn name(&self) -> &str {
-        "MyCustomPlugin"
-    }
+# If installed manually
+sudo rm /usr/local/bin/rss-proxy
+```
 
-    async fn filter_item(&self, item: &FeedItem) -> anyhow::Result<FilterDecision> {
-        if item.title.starts_with("SPAM:") {
-            return Ok(FilterDecision::Drop);
-        }
-        Ok(FilterDecision::Keep)
-    }
+### Removing Docker Containers
 
-    async fn transform_item(&self, item: &mut FeedItem) -> anyhow::Result<()> {
-        item.title = format!("⭐ {}", item.title);
-        Ok(())
-    }
-}
+```bash
+cd rss-proxy
+docker-compose down
+docker-compose rm -f
+```
+
+### Cleaning Configuration and Data
+
+```bash
+# Remove config and plugins (if no longer needed)
+rm -f config.yaml
+rm -rf plugins/
 ```
 
 ---
 
-## Running the Test Suite
+## Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/my-feature`
+3. Run the test suite locally: `cargo test`
+4. Commit your changes: `git commit -am 'Add new feature'`
+5. Push to the branch: `git push origin feature/my-feature`
+6. Submit a pull request
+
+### Running the Test Suite
 
 ```bash
 cargo test
+cargo test --release
 ```
 
-Runs all 12 unit and integration tests covering:
-- Keyword inclusion and exclusion
-- Regex pattern matching
-- Tracking parameter stripping from links and GUIDs
-- Max age filtering
-- Feed item truncation
-- Rhai script loading and execution (`filter_item` and `transform_item`)
-- End-to-end multi-stage pipeline processing
-- Axum router endpoints (`/health`, `/`, `/plugins`, `/proxy`)
+For code style and PR guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+---
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
+```
+MIT License
+
+Copyright (c) 2024 RSS Proxy Contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
