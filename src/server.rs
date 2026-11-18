@@ -81,7 +81,12 @@ async fn handle_root(State(state): State<Arc<AppState>>) -> Json<StatusResponse>
         }
         let mut groups: Vec<String> = groups_set.into_iter().collect();
         groups.sort();
-        (feeds, groups, cfg.plugins_dir.clone(), cfg.auto_register_proxy_feeds)
+        (
+            feeds,
+            groups,
+            cfg.plugins_dir.clone(),
+            cfg.auto_register_proxy_feeds,
+        )
     };
 
     let plugins = RhaiPlugin::load_directory(&plugins_dir);
@@ -118,10 +123,7 @@ async fn handle_export_opml(State(state): State<Arc<AppState>>) -> Response {
             .feeds
             .iter()
             .map(|(slug, f)| {
-                let title = f
-                    .title_override
-                    .clone()
-                    .unwrap_or_else(|| slug.clone());
+                let title = f.title_override.clone().unwrap_or_else(|| slug.clone());
                 let proxy_url = format!("{}/feeds/{}", base, slug);
                 ExportableFeed {
                     title,
@@ -150,7 +152,10 @@ async fn handle_export_opml(State(state): State<Arc<AppState>>) -> Response {
         .into_response()
 }
 
-fn build_pipeline_for_feed(feed_cfg: &FeedConfig, plugins_dir: &str) -> Result<PluginPipeline, String> {
+fn build_pipeline_for_feed(
+    feed_cfg: &FeedConfig,
+    plugins_dir: &str,
+) -> Result<PluginPipeline, String> {
     let mut pipeline = PluginPipeline::new();
 
     // 0. Feed cleaner (sanitizes broken or empty items)
@@ -160,7 +165,9 @@ fn build_pipeline_for_feed(feed_cfg: &FeedConfig, plugins_dir: &str) -> Result<P
     pipeline.add_plugin(Box::new(NopHandlerPlugin::new()));
 
     // 1. Built-in keyword filter
-    if !feed_cfg.filters.include_keywords.is_empty() || !feed_cfg.filters.exclude_keywords.is_empty() {
+    if !feed_cfg.filters.include_keywords.is_empty()
+        || !feed_cfg.filters.exclude_keywords.is_empty()
+    {
         pipeline.add_plugin(Box::new(KeywordFilterPlugin::new(
             feed_cfg.filters.include_keywords.clone(),
             feed_cfg.filters.exclude_keywords.clone(),
@@ -216,8 +223,17 @@ fn build_pipeline_for_feed(feed_cfg: &FeedConfig, plugins_dir: &str) -> Result<P
 async fn handle_all_feeds(State(state): State<Arc<AppState>>) -> Response {
     let (feeds_list, host, port, plugins_dir) = {
         let cfg = state.config.read().await;
-        let list: Vec<(String, FeedConfig)> = cfg.feeds.iter().map(|(k, v)| (k.clone(), v.clone())).collect();
-        (list, cfg.server.host.clone(), cfg.server.port, cfg.plugins_dir.clone())
+        let list: Vec<(String, FeedConfig)> = cfg
+            .feeds
+            .iter()
+            .map(|(k, v)| (k.clone(), v.clone()))
+            .collect();
+        (
+            list,
+            cfg.server.host.clone(),
+            cfg.server.port,
+            cfg.plugins_dir.clone(),
+        )
     };
 
     render_aggregated_feed(
@@ -250,7 +266,12 @@ async fn handle_group_feed(
             })
             .map(|(k, v)| (k.clone(), v.clone()))
             .collect();
-        (list, cfg.server.host.clone(), cfg.server.port, cfg.plugins_dir.clone())
+        (
+            list,
+            cfg.server.host.clone(),
+            cfg.server.port,
+            cfg.plugins_dir.clone(),
+        )
     };
 
     if matching_feeds.is_empty() {
@@ -406,10 +427,7 @@ async fn handle_configured_feed(
         }
     };
 
-    let feed_title = feed_cfg
-        .title_override
-        .as_deref()
-        .unwrap_or(clean_slug);
+    let feed_title = feed_cfg.title_override.as_deref().unwrap_or(clean_slug);
 
     // 0. If marked as NOP in config, serve NOP feed immediately without fetching upstream
     if feed_cfg.nop {
@@ -442,7 +460,10 @@ async fn handle_configured_feed(
     let mut feed = match state.fetcher.fetch(&feed_cfg.url).await {
         Ok(f) => f,
         Err(e) => {
-            if let Some(nop_feed) = pipeline.handle_fetch_error(&feed_cfg.url, feed_title, &e).await {
+            if let Some(nop_feed) = pipeline
+                .handle_fetch_error(&feed_cfg.url, feed_title, &e)
+                .await
+            {
                 return match nop_feed.to_rss_xml() {
                     Ok(xml) => (
                         StatusCode::OK,
@@ -498,7 +519,11 @@ async fn handle_proxy_feed(
     State(state): State<Arc<AppState>>,
 ) -> Response {
     if params.url.trim().is_empty() {
-        return (StatusCode::BAD_REQUEST, "Missing required 'url' query parameter").into_response();
+        return (
+            StatusCode::BAD_REQUEST,
+            "Missing required 'url' query parameter",
+        )
+            .into_response();
     }
 
     let mut pipeline = PluginPipeline::new();
@@ -518,18 +543,15 @@ async fn handle_proxy_feed(
         .unwrap_or_default();
 
     if !include_kws.is_empty() || !exclude_kws.is_empty() {
-        pipeline.add_plugin(Box::new(KeywordFilterPlugin::new(include_kws.clone(), exclude_kws.clone())));
+        pipeline.add_plugin(Box::new(KeywordFilterPlugin::new(
+            include_kws.clone(),
+            exclude_kws.clone(),
+        )));
     }
 
     // Regex
-    let include_regex = params
-        .include_regex
-        .map(|r| vec![r])
-        .unwrap_or_default();
-    let exclude_regex = params
-        .exclude_regex
-        .map(|r| vec![r])
-        .unwrap_or_default();
+    let include_regex = params.include_regex.map(|r| vec![r]).unwrap_or_default();
+    let exclude_regex = params.exclude_regex.map(|r| vec![r]).unwrap_or_default();
 
     if !include_regex.is_empty() || !exclude_regex.is_empty() {
         match RegexFilterPlugin::new(&include_regex, &exclude_regex) {
@@ -587,7 +609,10 @@ async fn handle_proxy_feed(
     // Fetch feed (with automatic fallback to NOP feed on error)
     let mut feed = match state.fetcher.fetch(&params.url).await {
         Ok(f) => f,
-        Err(e) => match pipeline.handle_fetch_error(&params.url, &params.url, &e).await {
+        Err(e) => match pipeline
+            .handle_fetch_error(&params.url, &params.url, &e)
+            .await
+        {
             Some(nop_feed) => nop_feed,
             None => {
                 return (
@@ -609,7 +634,11 @@ async fn handle_proxy_feed(
 
     if auto_register {
         let mut cfg = state.config.write().await;
-        let existing = cfg.feeds.iter().find(|(_, f)| f.url == params.url).map(|(s, _)| s.clone());
+        let existing = cfg
+            .feeds
+            .iter()
+            .find(|(_, f)| f.url == params.url)
+            .map(|(s, _)| s.clone());
         if let Some(slug) = existing {
             registered_slug = Some(slug);
         } else {
@@ -640,13 +669,14 @@ async fn handle_proxy_feed(
 
             if let Ok(yaml) = serde_yaml::to_string(&*cfg) {
                 if let Err(e) = std::fs::write(&state.config_path, yaml) {
-                    error!("Failed to persist auto-registered feed to {:?}: {}", state.config_path, e);
+                    error!(
+                        "Failed to persist auto-registered feed to {:?}: {}",
+                        state.config_path, e
+                    );
                 } else {
                     info!(
                         "Auto-registered new feed '{}' as '/feeds/{}' in {:?}",
-                        feed.title,
-                        slug,
-                        state.config_path
+                        feed.title, slug, state.config_path
                     );
                 }
             }

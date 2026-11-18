@@ -39,7 +39,10 @@ mod tests {
     #[test]
     fn test_slugify() {
         assert_eq!(slugify("Hacker News!"), "hacker-news");
-        assert_eq!(slugify("Rust 1.94 Release & More"), "rust-1-94-release-more");
+        assert_eq!(
+            slugify("Rust 1.94 Release & More"),
+            "rust-1-94-release-more"
+        );
         assert_eq!(slugify("   ___   "), "feed");
     }
 
@@ -62,13 +65,15 @@ mod tests {
         let config_file = tempfile::NamedTempFile::new().unwrap();
 
         // Dry run test
-        let dry_imported = import_opml_into_config(opml_file.path(), config_file.path(), true).unwrap();
+        let dry_imported =
+            import_opml_into_config(opml_file.path(), config_file.path(), true).unwrap();
         assert_eq!(dry_imported.len(), 3);
         let dry_config_content = std::fs::read_to_string(config_file.path()).unwrap();
         assert!(dry_config_content.is_empty());
 
         // Actual import
-        let imported = import_opml_into_config(opml_file.path(), config_file.path(), false).unwrap();
+        let imported =
+            import_opml_into_config(opml_file.path(), config_file.path(), false).unwrap();
         assert_eq!(imported.len(), 3);
 
         let config = rss_proxy::config::AppConfig::load_or_default(config_file.path()).unwrap();

@@ -35,7 +35,10 @@ impl Plugin for NopHandlerPlugin {
 
     async fn on_fetch_error(&self, url: &str, title: &str, error: &anyhow::Error) -> Option<Feed> {
         let reason = error.to_string();
-        warn!("Feed '{}' failed upstream fetch ({}). Serving NOP fallback feed.", title, reason);
+        warn!(
+            "Feed '{}' failed upstream fetch ({}). Serving NOP fallback feed.",
+            title, reason
+        );
         Some(Self::make_nop_feed(url, title, &reason))
     }
 }

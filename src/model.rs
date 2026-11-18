@@ -60,32 +60,22 @@ impl Feed {
                     .map(|l| l.href.clone())
                     .unwrap_or_default();
 
-                let description = entry
-                    .summary
-                    .map(|s| s.content)
-                    .unwrap_or_else(|| {
-                        entry
-                            .content
-                            .as_ref()
-                            .and_then(|c| c.body.clone())
-                            .unwrap_or_default()
-                    });
+                let description = entry.summary.map(|s| s.content).unwrap_or_else(|| {
+                    entry
+                        .content
+                        .as_ref()
+                        .and_then(|c| c.body.clone())
+                        .unwrap_or_default()
+                });
 
                 let content = entry.content.and_then(|c| c.body);
 
-                let author = entry
-                    .authors
-                    .first()
-                    .map(|a| a.name.clone());
+                let author = entry.authors.first().map(|a| a.name.clone());
 
                 let published = entry.published;
                 let updated = entry.updated;
 
-                let categories = entry
-                    .categories
-                    .into_iter()
-                    .map(|c| c.term)
-                    .collect();
+                let categories = entry.categories.into_iter().map(|c| c.term).collect();
 
                 FeedItem {
                     id,
@@ -112,7 +102,7 @@ impl Feed {
 
     /// Render internal Feed representation to RSS 2.0 XML
     pub fn to_rss_xml(&self) -> Result<String, String> {
-        use rss::{ChannelBuilder, ItemBuilder, GuidBuilder};
+        use rss::{ChannelBuilder, GuidBuilder, ItemBuilder};
 
         let mut channel_builder = ChannelBuilder::default();
         channel_builder

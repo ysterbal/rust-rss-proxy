@@ -97,7 +97,10 @@ fn parse_outline_attributes(
         }
     }
 
-    let feed_title = title.clone().or(text.clone()).unwrap_or_else(|| "Untitled Feed".to_string());
+    let feed_title = title
+        .clone()
+        .or(text.clone())
+        .unwrap_or_else(|| "Untitled Feed".to_string());
 
     if let Some(url) = xml_url {
         let category = folder_stack.last().cloned();
@@ -208,7 +211,10 @@ pub fn generate_grouped_opml(title: &str, feeds: &[ExportableFeed]) -> String {
     out.push_str("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
     out.push_str("<opml version=\"2.0\">\n");
     out.push_str("  <head>\n");
-    out.push_str(&format!("    <title>{}</title>\n", quick_xml::escape::escape(title)));
+    out.push_str(&format!(
+        "    <title>{}</title>\n",
+        quick_xml::escape::escape(title)
+    ));
     out.push_str("  </head>\n");
     out.push_str("  <body>\n");
 

@@ -57,10 +57,10 @@ impl FeedFetcher {
                 .unwrap_or((None, None))
         };
 
-        let mut request = self
-            .client
-            .get(url)
-            .header(USER_AGENT, "rss-proxy/0.1.0 (+https://github.com/rust-rss-proxy)");
+        let mut request = self.client.get(url).header(
+            USER_AGENT,
+            "rss-proxy/0.1.0 (+https://github.com/rust-rss-proxy)",
+        );
 
         if let Some(ref etag) = cached_etag {
             request = request.header(IF_NONE_MATCH, etag);

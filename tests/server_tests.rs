@@ -46,12 +46,7 @@ mod tests {
         let app = create_router(state);
 
         let response = app
-            .oneshot(
-                Request::builder()
-                    .uri("/")
-                    .body(Body::empty())
-                    .unwrap(),
-            )
+            .oneshot(Request::builder().uri("/").body(Body::empty()).unwrap())
             .await
             .unwrap();
 
@@ -125,12 +120,7 @@ mod tests {
         let app = create_router(state);
 
         let response = app
-            .oneshot(
-                Request::builder()
-                    .uri("/opml")
-                    .body(Body::empty())
-                    .unwrap(),
-            )
+            .oneshot(Request::builder().uri("/opml").body(Body::empty()).unwrap())
             .await
             .unwrap();
 
@@ -190,7 +180,12 @@ mod tests {
             .unwrap();
 
         assert_eq!(response_slash.status(), StatusCode::OK);
-        let body = response_slash.into_body().collect().await.unwrap().to_bytes();
+        let body = response_slash
+            .into_body()
+            .collect()
+            .await
+            .unwrap()
+            .to_bytes();
         let xml_str = String::from_utf8(body.to_vec()).unwrap();
         assert!(xml_str.contains("<title>RSS Proxy - All Feeds</title>"));
     }
@@ -246,7 +241,10 @@ mod tests {
         let response = app
             .oneshot(
                 Request::builder()
-                    .uri(&format!("/proxy?url={}&group=AutoTest&exclude=spam", test_url))
+                    .uri(&format!(
+                        "/proxy?url={}&group=AutoTest&exclude=spam",
+                        test_url
+                    ))
                     .body(Body::empty())
                     .unwrap(),
             )
@@ -260,7 +258,10 @@ mod tests {
         {
             let cfg = state.config.read().await;
             let registered = cfg.feeds.values().find(|f| f.url == test_url);
-            assert!(registered.is_some(), "Feed should be registered in config.feeds");
+            assert!(
+                registered.is_some(),
+                "Feed should be registered in config.feeds"
+            );
             let f = registered.unwrap();
             assert_eq!(f.group.as_deref(), Some("AutoTest"));
             assert_eq!(f.filters.exclude_keywords, vec!["spam".to_string()]);

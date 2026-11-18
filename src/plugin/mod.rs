@@ -37,7 +37,12 @@ pub trait Plugin: Send + Sync {
     }
 
     /// Invoked when upstream feed fails to fetch or parse. Returns an optional fallback Feed (e.g., NOP feed)
-    async fn on_fetch_error(&self, _url: &str, _title: &str, _error: &anyhow::Error) -> Option<Feed> {
+    async fn on_fetch_error(
+        &self,
+        _url: &str,
+        _title: &str,
+        _error: &anyhow::Error,
+    ) -> Option<Feed> {
         None
     }
 }
@@ -59,7 +64,12 @@ impl PluginPipeline {
     }
 
     /// Handle upstream fetch errors by delegating to plugins that implement on_fetch_error
-    pub async fn handle_fetch_error(&self, url: &str, title: &str, error: &anyhow::Error) -> Option<Feed> {
+    pub async fn handle_fetch_error(
+        &self,
+        url: &str,
+        title: &str,
+        error: &anyhow::Error,
+    ) -> Option<Feed> {
         for plugin in &self.plugins {
             if let Some(fallback) = plugin.on_fetch_error(url, title, error).await {
                 return Some(fallback);
@@ -89,11 +99,7 @@ impl PluginPipeline {
                 match plugin.filter_item(&item).await {
                     Ok(FilterDecision::Keep) => {}
                     Ok(FilterDecision::Drop) => {
-                        debug!(
-                            "Plugin '{}' dropped item '{}'",
-                            plugin.name(),
-                            item.title
-                        );
+                        debug!("Plugin '{}' dropped item '{}'", plugin.name(), item.title);
                         keep = false;
                         break;
                     }

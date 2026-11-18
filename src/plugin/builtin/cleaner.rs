@@ -34,7 +34,10 @@ impl Plugin for FeedCleanerPlugin {
 
         // Drop entries that are typical error pages from cloud providers (e.g. Cloudflare / Cloud Functions)
         let lower_title = item.title.to_lowercase();
-        if lower_title.contains("403 forbidden") || lower_title.contains("502 bad gateway") || lower_title.contains("error 404") {
+        if lower_title.contains("403 forbidden")
+            || lower_title.contains("502 bad gateway")
+            || lower_title.contains("error 404")
+        {
             return Ok(FilterDecision::Drop);
         }
 

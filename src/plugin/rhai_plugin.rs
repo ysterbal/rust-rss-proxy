@@ -25,7 +25,8 @@ impl RhaiPlugin {
             .to_string();
 
         let engine = Engine::new();
-        let ast = engine.compile_file(path.clone())
+        let ast = engine
+            .compile_file(path.clone())
             .map_err(|e| anyhow::anyhow!("Failed to compile Rhai script {:?}: {}", path, e))?;
 
         Ok(Self {
@@ -73,7 +74,9 @@ impl Plugin for RhaiPlugin {
             .map_err(|e| anyhow::anyhow!("Failed to serialize FeedItem to Rhai: {}", e))?;
 
         // Call filter_item(item)
-        let result = self.engine.call_fn::<Dynamic>(&mut scope, &self.ast, "filter_item", (dynamic_item,));
+        let result =
+            self.engine
+                .call_fn::<Dynamic>(&mut scope, &self.ast, "filter_item", (dynamic_item,));
 
         match result {
             Ok(val) => {
@@ -109,11 +112,16 @@ impl Plugin for RhaiPlugin {
             }
             Err(e) => match *e {
                 // Hook not defined in script is completely normal
-                rhai::EvalAltResult::ErrorFunctionNotFound(ref name, _) if name.starts_with("filter_item") => {
+                rhai::EvalAltResult::ErrorFunctionNotFound(ref name, _)
+                    if name.starts_with("filter_item") =>
+                {
                     Ok(FilterDecision::Keep)
                 }
                 other => {
-                    warn!("Rhai plugin '{}' error in filter_item: {}", self.name, other);
+                    warn!(
+                        "Rhai plugin '{}' error in filter_item: {}",
+                        self.name, other
+                    );
                     Ok(FilterDecision::Keep)
                 }
             },
@@ -126,7 +134,12 @@ impl Plugin for RhaiPlugin {
             .map_err(|e| anyhow::anyhow!("Failed to serialize FeedItem to Rhai: {}", e))?;
 
         // Call transform_item(item)
-        let result = self.engine.call_fn::<Dynamic>(&mut scope, &self.ast, "transform_item", (dynamic_item,));
+        let result = self.engine.call_fn::<Dynamic>(
+            &mut scope,
+            &self.ast,
+            "transform_item",
+            (dynamic_item,),
+        );
 
         match result {
             Ok(val) => {
@@ -136,11 +149,16 @@ impl Plugin for RhaiPlugin {
                 }
             }
             Err(e) => match *e {
-                rhai::EvalAltResult::ErrorFunctionNotFound(ref name, _) if name.starts_with("transform_item") => {
+                rhai::EvalAltResult::ErrorFunctionNotFound(ref name, _)
+                    if name.starts_with("transform_item") =>
+                {
                     // Hook not defined, nothing to do
                 }
                 other => {
-                    warn!("Rhai plugin '{}' error in transform_item: {}", self.name, other);
+                    warn!(
+                        "Rhai plugin '{}' error in transform_item: {}",
+                        self.name, other
+                    );
                 }
             },
         }
@@ -153,7 +171,12 @@ impl Plugin for RhaiPlugin {
         let dynamic_feed = rhai::serde::to_dynamic(&*feed)
             .map_err(|e| anyhow::anyhow!("Failed to serialize Feed to Rhai: {}", e))?;
 
-        let result = self.engine.call_fn::<Dynamic>(&mut scope, &self.ast, "pre_process_feed", (dynamic_feed,));
+        let result = self.engine.call_fn::<Dynamic>(
+            &mut scope,
+            &self.ast,
+            "pre_process_feed",
+            (dynamic_feed,),
+        );
 
         match result {
             Ok(val) => {
@@ -162,9 +185,13 @@ impl Plugin for RhaiPlugin {
                 }
             }
             Err(e) => match *e {
-                rhai::EvalAltResult::ErrorFunctionNotFound(ref name, _) if name.starts_with("pre_process_feed") => {}
+                rhai::EvalAltResult::ErrorFunctionNotFound(ref name, _)
+                    if name.starts_with("pre_process_feed") => {}
                 other => {
-                    warn!("Rhai plugin '{}' error in pre_process_feed: {}", self.name, other);
+                    warn!(
+                        "Rhai plugin '{}' error in pre_process_feed: {}",
+                        self.name, other
+                    );
                 }
             },
         }
@@ -177,7 +204,12 @@ impl Plugin for RhaiPlugin {
         let dynamic_feed = rhai::serde::to_dynamic(&*feed)
             .map_err(|e| anyhow::anyhow!("Failed to serialize Feed to Rhai: {}", e))?;
 
-        let result = self.engine.call_fn::<Dynamic>(&mut scope, &self.ast, "post_process_feed", (dynamic_feed,));
+        let result = self.engine.call_fn::<Dynamic>(
+            &mut scope,
+            &self.ast,
+            "post_process_feed",
+            (dynamic_feed,),
+        );
 
         match result {
             Ok(val) => {
@@ -186,9 +218,13 @@ impl Plugin for RhaiPlugin {
                 }
             }
             Err(e) => match *e {
-                rhai::EvalAltResult::ErrorFunctionNotFound(ref name, _) if name.starts_with("post_process_feed") => {}
+                rhai::EvalAltResult::ErrorFunctionNotFound(ref name, _)
+                    if name.starts_with("post_process_feed") => {}
                 other => {
-                    warn!("Rhai plugin '{}' error in post_process_feed: {}", self.name, other);
+                    warn!(
+                        "Rhai plugin '{}' error in post_process_feed: {}",
+                        self.name, other
+                    );
                 }
             },
         }

@@ -89,25 +89,28 @@ async fn main() -> anyhow::Result<()> {
             }
 
             if dry_run {
-                println!("\n(Dry run: no changes written to {})", cli.config.display());
+                println!(
+                    "\n(Dry run: no changes written to {})",
+                    cli.config.display()
+                );
             } else {
-                println!("\nSuccessfully imported {} feed(s) into {}", imported.len(), cli.config.display());
+                println!(
+                    "\nSuccessfully imported {} feed(s) into {}",
+                    imported.len(),
+                    cli.config.display()
+                );
             }
         }
         Commands::ExportOpml { base_url, output } => {
             let config = config::AppConfig::load_or_default(&cli.config)?;
-            let host_url = base_url.unwrap_or_else(|| {
-                format!("http://{}:{}", config.server.host, config.server.port)
-            });
+            let host_url = base_url
+                .unwrap_or_else(|| format!("http://{}:{}", config.server.host, config.server.port));
 
             let feeds: Vec<opml::ExportableFeed> = config
                 .feeds
                 .iter()
                 .map(|(slug, cfg)| {
-                    let title = cfg
-                        .title_override
-                        .clone()
-                        .unwrap_or_else(|| slug.clone());
+                    let title = cfg.title_override.clone().unwrap_or_else(|| slug.clone());
                     let proxy_url = format!("{}/feeds/{}", host_url, slug);
                     opml::ExportableFeed {
                         title,
@@ -133,7 +136,12 @@ async fn main() -> anyhow::Result<()> {
         }
         Commands::AuditFeeds { mark_nop, timeout } => {
             let mut config = config::AppConfig::load_or_default(&cli.config)?;
-            println!("Auditing {} feed(s) in {} (timeout: {}s)...", config.feeds.len(), cli.config.display(), timeout);
+            println!(
+                "Auditing {} feed(s) in {} (timeout: {}s)...",
+                config.feeds.len(),
+                cli.config.display(),
+                timeout
+            );
 
             let client = reqwest::Client::builder()
                 .timeout(std::time::Duration::from_secs(timeout))
@@ -207,7 +215,10 @@ async fn main() -> anyhow::Result<()> {
                 std::fs::write(&cli.config, yaml)?;
                 println!("\nUpdated {} with NOP flags.", cli.config.display());
             } else if !mark_nop && failing_count > 0 {
-                println!("\nTip: Run with --mark-nop to automatically flag failing feeds in {}.", cli.config.display());
+                println!(
+                    "\nTip: Run with --mark-nop to automatically flag failing feeds in {}.",
+                    cli.config.display()
+                );
             }
         }
     }
@@ -233,7 +244,11 @@ async fn run_server(
 
     if !std::path::Path::new(&config.plugins_dir).exists() {
         if let Err(e) = std::fs::create_dir_all(&config.plugins_dir) {
-            tracing::warn!("Could not create plugins directory {}: {}", config.plugins_dir, e);
+            tracing::warn!(
+                "Could not create plugins directory {}: {}",
+                config.plugins_dir,
+                e
+            );
         }
     }
 

@@ -22,24 +22,42 @@ mod tests {
 
     #[tokio::test]
     async fn test_keyword_filter_exclude() {
-        let filter = KeywordFilterPlugin::new(vec![], vec!["sponsored".to_string(), "crypto".to_string()]);
+        let filter =
+            KeywordFilterPlugin::new(vec![], vec!["sponsored".to_string(), "crypto".to_string()]);
 
-        let item1 = sample_item("Great Rust tutorial", "https://example.com/1", "A normal post");
+        let item1 = sample_item(
+            "Great Rust tutorial",
+            "https://example.com/1",
+            "A normal post",
+        );
         let item2 = sample_item("Sponsored: buy this!", "https://example.com/2", "Spam");
 
-        assert_eq!(filter.filter_item(&item1).await.unwrap(), FilterDecision::Keep);
-        assert_eq!(filter.filter_item(&item2).await.unwrap(), FilterDecision::Drop);
+        assert_eq!(
+            filter.filter_item(&item1).await.unwrap(),
+            FilterDecision::Keep
+        );
+        assert_eq!(
+            filter.filter_item(&item2).await.unwrap(),
+            FilterDecision::Drop
+        );
     }
 
     #[tokio::test]
     async fn test_keyword_filter_include() {
-        let filter = KeywordFilterPlugin::new(vec!["rust".to_string(), "tokio".to_string()], vec![]);
+        let filter =
+            KeywordFilterPlugin::new(vec!["rust".to_string(), "tokio".to_string()], vec![]);
 
         let item1 = sample_item("Great Rust tutorial", "https://example.com/1", "Learn Rust");
         let item2 = sample_item("Daily JS news", "https://example.com/2", "JavaScript tips");
 
-        assert_eq!(filter.filter_item(&item1).await.unwrap(), FilterDecision::Keep);
-        assert_eq!(filter.filter_item(&item2).await.unwrap(), FilterDecision::Drop);
+        assert_eq!(
+            filter.filter_item(&item1).await.unwrap(),
+            FilterDecision::Keep
+        );
+        assert_eq!(
+            filter.filter_item(&item2).await.unwrap(),
+            FilterDecision::Drop
+        );
     }
 
     #[tokio::test]
@@ -50,13 +68,34 @@ mod tests {
         )
         .unwrap();
 
-        let item1 = sample_item("Rust 1.94 Release is out", "https://example.com/1", "New release");
-        let item2 = sample_item("Rust 1.95 beta Release", "https://example.com/2", "Beta preview");
-        let item3 = sample_item("Random announcement", "https://example.com/3", "Other stuff");
+        let item1 = sample_item(
+            "Rust 1.94 Release is out",
+            "https://example.com/1",
+            "New release",
+        );
+        let item2 = sample_item(
+            "Rust 1.95 beta Release",
+            "https://example.com/2",
+            "Beta preview",
+        );
+        let item3 = sample_item(
+            "Random announcement",
+            "https://example.com/3",
+            "Other stuff",
+        );
 
-        assert_eq!(filter.filter_item(&item1).await.unwrap(), FilterDecision::Keep);
-        assert_eq!(filter.filter_item(&item2).await.unwrap(), FilterDecision::Drop);
-        assert_eq!(filter.filter_item(&item3).await.unwrap(), FilterDecision::Drop);
+        assert_eq!(
+            filter.filter_item(&item1).await.unwrap(),
+            FilterDecision::Keep
+        );
+        assert_eq!(
+            filter.filter_item(&item2).await.unwrap(),
+            FilterDecision::Drop
+        );
+        assert_eq!(
+            filter.filter_item(&item3).await.unwrap(),
+            FilterDecision::Drop
+        );
     }
 
     #[tokio::test]
@@ -70,10 +109,7 @@ mod tests {
 
         cleaner.transform_item(&mut item).await.unwrap();
 
-        assert_eq!(
-            item.link,
-            "https://example.com/post?id=123#heading"
-        );
+        assert_eq!(item.link, "https://example.com/post?id=123#heading");
     }
 
     #[tokio::test]
@@ -85,8 +121,14 @@ mod tests {
 
         let fresh_item = sample_item("Fresh news", "https://example.com/fresh", "Fresh post");
 
-        assert_eq!(filter.filter_item(&old_item).await.unwrap(), FilterDecision::Drop);
-        assert_eq!(filter.filter_item(&fresh_item).await.unwrap(), FilterDecision::Keep);
+        assert_eq!(
+            filter.filter_item(&old_item).await.unwrap(),
+            FilterDecision::Drop
+        );
+        assert_eq!(
+            filter.filter_item(&fresh_item).await.unwrap(),
+            FilterDecision::Keep
+        );
     }
 
     #[tokio::test]
@@ -135,8 +177,14 @@ mod tests {
         let crypto_item = sample_item("Crypto surges today", "https://example.com/c", "");
         let tech_item = sample_item("New compiler optimizations", "https://example.com/t", "");
 
-        assert_eq!(plugin.filter_item(&crypto_item).await.unwrap(), FilterDecision::Drop);
-        assert_eq!(plugin.filter_item(&tech_item).await.unwrap(), FilterDecision::Keep);
+        assert_eq!(
+            plugin.filter_item(&crypto_item).await.unwrap(),
+            FilterDecision::Drop
+        );
+        assert_eq!(
+            plugin.filter_item(&tech_item).await.unwrap(),
+            FilterDecision::Keep
+        );
 
         let mut mod_item = tech_item;
         plugin.transform_item(&mut mod_item).await.unwrap();
@@ -148,7 +196,10 @@ mod tests {
         let mut pipeline = PluginPipeline::new();
 
         // 1. Keyword filter: exclude "spam"
-        pipeline.add_plugin(Box::new(KeywordFilterPlugin::new(vec![], vec!["spam".to_string()])));
+        pipeline.add_plugin(Box::new(KeywordFilterPlugin::new(
+            vec![],
+            vec!["spam".to_string()],
+        )));
 
         // 2. Link cleaner
         pipeline.add_plugin(Box::new(LinkCleanerPlugin::new()));
@@ -162,9 +213,17 @@ mod tests {
             description: "Testing pipeline".to_string(),
             language: Some("en".to_string()),
             items: vec![
-                sample_item("First item", "https://example.com/1?utm_source=rss", "Clean"),
+                sample_item(
+                    "First item",
+                    "https://example.com/1?utm_source=rss",
+                    "Clean",
+                ),
                 sample_item("Spam post", "https://example.com/spam", "Buy now"),
-                sample_item("Second item", "https://example.com/2?utm_medium=feed", "Also clean"),
+                sample_item(
+                    "Second item",
+                    "https://example.com/2?utm_medium=feed",
+                    "Also clean",
+                ),
                 sample_item("Third item", "https://example.com/3", "Clean too"),
             ],
         };
@@ -219,11 +278,21 @@ mod tests {
             updated: None,
             categories: vec![],
         };
-        assert_eq!(cleaner.filter_item(&empty_item).await.unwrap(), FilterDecision::Drop);
+        assert_eq!(
+            cleaner.filter_item(&empty_item).await.unwrap(),
+            FilterDecision::Drop
+        );
 
         // 2. Normal item with messy whitespace should be cleaned
-        let mut messy_item = sample_item("  Multi-space   title  here ", "https://example.com/ok", "  some desc  ");
-        assert_eq!(cleaner.filter_item(&messy_item).await.unwrap(), FilterDecision::Keep);
+        let mut messy_item = sample_item(
+            "  Multi-space   title  here ",
+            "https://example.com/ok",
+            "  some desc  ",
+        );
+        assert_eq!(
+            cleaner.filter_item(&messy_item).await.unwrap(),
+            FilterDecision::Keep
+        );
         cleaner.transform_item(&mut messy_item).await.unwrap();
         assert_eq!(messy_item.title, "Multi-space title here");
         assert_eq!(messy_item.description, "some desc");

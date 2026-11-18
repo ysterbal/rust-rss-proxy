@@ -60,7 +60,10 @@ impl Plugin for RegexFilterPlugin {
         }
 
         if !self.include_patterns.is_empty() {
-            let matched = self.include_patterns.iter().any(|re| re.is_match(&full_text));
+            let matched = self
+                .include_patterns
+                .iter()
+                .any(|re| re.is_match(&full_text));
             if !matched {
                 return Ok(FilterDecision::Drop);
             }
