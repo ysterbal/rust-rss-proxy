@@ -2,7 +2,7 @@
 
 A high-performance, extensible RSS/Atom proxy and filtering server written in Rust. Route, filter, and transform feed content through a unified API with plugin-based extensibility.
 
-[![Build Status](https://github.com/rust-rss-proxy/rss-proxy/actions/workflows/ci.yml/badge.svg)](https://github.com/rust-rss-proxy/rss-proxy/actions)
+[![Build Status](https://github.com/ysterbal/rust-rss-proxy/actions/workflows/ci.yml/badge.svg)](https://github.com/ysterbal/rust-rss-proxy/actions)
 [![Version](https://img.shields.io/crates/v/rss-proxy.svg)](https://crates.io/crates/rss-proxy)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
