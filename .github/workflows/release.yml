@@ -9,48 +9,104 @@ permissions:
   contents: write
 
 jobs:
-  release:
+  build-linux:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
 
     - name: Set up Rust toolchain
       uses: dtolnay/rust-toolchain@stable
+      with:
+        targets: x86_64-unknown-linux-gnu,aarch64-unknown-linux-gnu
 
     - name: Build release binaries
       run: |
-        # Linux x86_64
         cargo build --release --target x86_64-unknown-linux-gnu
-        cp target/x86_64-unknown-linux-gnu/release/rss-proxy rss-proxy-x86_64-unknown-linux-gnu
+        cargo build --release --target aarch64-unknown-linux-gnu
+
+    - name: Package Linux binaries
+      run: |
+        cp target/x86_64-unknown-linux-gnu/release/rss-proxy rss-proxy-${{ github.ref_name }}-x86_64-unknown-linux-gnu
+        chmod +x rss-proxy-${{ github.ref_name }}-x86_64-unknown-linux-gnu
+        tar -czf rss-proxy-${{ github.ref_name }}-x86_64-unknown-linux-gnu.tar.gz rss-proxy-${{ github.ref_name }}-x86_64-unknown-linux-gnu
         
-        # macOS universal (build for both targets)
-        rustup target add x86_64-apple-darwin aarch64-apple-darwin
+        cp target/aarch64-unknown-linux-gnu/release/rss-proxy rss-proxy-${{ github.ref_name }}-aarch64-unknown-linux-gnu
+        chmod +x rss-proxy-${{ github.ref_name }}-aarch64-unknown-linux-gnu
+        tar -czf rss-proxy-${{ github.ref_name }}-aarch64-unknown-linux-gnu.tar.gz rss-proxy-${{ github.ref_name }}-aarch64-unknown-linux-gnu
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: linux-binaries
+        path: rss-proxy-v*-linux*.tar.gz
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        targets: x86_64-apple-darwin,aarch64-apple-darwin
+
+    - name: Build release binaries
+      run: |
         cargo build --release --target x86_64-apple-darwin
         cargo build --release --target aarch64-apple-darwin
-        
-        # Windows
-        rustup target add x86_64-pc-windows-msvc
-        cargo build --release --target x86_64-pc-windows-msvc
 
-    - name: Package binaries
+    - name: Package macOS binaries
       run: |
-        # Linux x86_64
-        tar -czf rss-proxy-${{ github.ref_name }}-x86_64-unknown-linux-gnu.tar.gz rss-proxy-x86_64-unknown-linux-gnu
-        
-        # macOS binaries
-        tar -czf rss-proxy-${{ github.ref_name }}-x86_64-apple-darwin.tar.gz target/x86_64-apple-darwin/release/rss-proxy
-        tar -czf rss-proxy-${{ github.ref_name }}-aarch64-apple-darwin.tar.gz target/aarch64-apple-darwin/release/rss-proxy
-        
-        # Windows
-        cp target/x86_64-pc-windows-msvc/release/rss-proxy.exe rss-proxy-${{ github.ref_name }}-x86_64-pc-windows-msvc.exe
-        zip rss-proxy-${{ github.ref_name }}-x86_64-pc-windows-msvc.zip rss-proxy-${{ github.ref_name }}-x86_64-pc-windows-msvc.exe
+        for target in x86_64-apple-darwin aarch64-apple-darwin; do
+          cp target/$target/release/rss-proxy rss-proxy-${{ github.ref_name }}-$target
+          chmod +x rss-proxy-${{ github.ref_name }}-$target
+          tar -czf rss-proxy-${{ github.ref_name }}-$target.tar.gz rss-proxy-${{ github.ref_name }}-$target
+        done
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: macos-binaries
+        path: rss-proxy-v*-apple-darwin.tar.gz
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        targets: x86_64-pc-windows-msvc
+
+    - name: Build release binary
+      run: cargo build --release --target x86_64-pc-windows-msvc
+
+    - name: Package Windows binary
+      run: |
+        Copy-Item target/x86_64-pc-windows-msvc/release/rss-proxy.exe rss-proxy-${{ github.ref_name }}-x86_64-pc-windows-msvc.exe
+        Compress-Archive -Path rss-proxy-${{ github.ref_name }}-x86_64-pc-windows-msvc.exe -DestinationPath rss-proxy-${{ github.ref_name }}-x86_64-pc-windows-msvc.zip
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: windows-binaries
+        path: rss-proxy-v*-windows*.zip
+
+  publish-release:
+    needs: [build-linux, build-macos, build-windows]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+
+    - name: List artifacts
+      run: find artifacts -type f
 
     - name: Create Release
       uses: softprops/action-gh-release@v2
       with:
         generate_release_notes: true
         files: |
-          rss-proxy-${{ github.ref_name }}-x86_64-unknown-linux-gnu.tar.gz
-          rss-proxy-${{ github.ref_name }}-x86_64-apple-darwin.tar.gz
-          rss-proxy-${{ github.ref_name }}-aarch64-apple-darwin.tar.gz
-          rss-proxy-${{ github.ref_name }}-x86_64-pc-windows-msvc.zip
+          artifacts/linux-binaries/*.tar.gz
+          artifacts/macos-binaries/*.tar.gz
+          artifacts/windows-binaries/*.zip
